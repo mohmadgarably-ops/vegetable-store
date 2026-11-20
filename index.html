@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2e7d32">
+<title>سوق الخضار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f9f2;--card:#ffffff;--tx:#182619;--mu:#5f7260;--g:#2e7d32;--g2:#43a047;
+  --gl:#e8f5e9;--bd:#dce7d8;--ac:#ef6c00;--sh:0 6px 20px rgba(30,80,30,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Cairo',Tahoma,sans-serif;padding-bottom:90px}
+header{
+  background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;padding:14px 16px;
+  display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;
+  box-shadow:0 4px 16px rgba(46,125,50,.22);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+.brand .logo img{width:100%;height:100%;object-fit:cover}
+h1{margin:0;font-size:20px;font-weight:800}
+.status-pill{font-size:12px;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:20px;font-weight:700}
+.wrap{max-width:1040px;margin:auto;padding:0 12px}
+#bn{margin-top:12px}
+.bs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:18px;scrollbar-width:none;box-shadow:var(--sh)}
+.bs::-webkit-scrollbar{display:none}
+.bs>div{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:16/6.5;background:var(--gl)}
+.bs img{width:100%;height:100%;object-fit:cover;display:block}
+.dp{background:linear-gradient(135deg,#1b5e20,#43a047);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+.dp b{display:block;font-size:clamp(18px,5vw,28px);font-weight:800}
+.dp span{display:block;font-size:clamp(12px,3.2vw,15px);opacity:.95;margin-top:4px}
+.dp em{display:inline-block;margin-top:10px;background:#fff;color:var(--g);border-radius:20px;padding:4px 16px;font-style:normal;font-weight:700;font-size:13px}
+.dp i{font-style:normal;font-size:clamp(38px,10vw,64px)}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.dots b{width:7px;height:7px;border-radius:50%;background:var(--bd);transition:.2s}
+.dots b.on{background:var(--g);width:20px;border-radius:6px}
+.perks{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}
+.perks::-webkit-scrollbar{display:none}
+.perks span{white-space:nowrap;background:var(--card);border:1px solid var(--bd);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.chips{display:flex;gap:12px;overflow-x:auto;padding:10px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;width:72px;text-align:center;background:none;border:0;color:var(--tx);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.cat i{display:flex;width:60px;height:60px;margin:0 auto 6px;border-radius:50%;background:var(--card);border:2px solid var(--bd);align-items:center;justify-content:center;font-size:28px;font-style:normal;overflow:hidden;box-shadow:var(--sh);transition:.2s}
+.cat i img{width:100%;height:100%;object-fit:cover}
+.cat.on i{border-color:var(--g);background:var(--gl);transform:translateY(-2px)}
+.cat.on{color:var(--g);font-weight:800}
+.in{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font-family:inherit;font-size:14px;margin:4px 0;outline:none}
+.in:focus{border-color:var(--g)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:10px 0}
+@media(min-width:720px){.grid{grid-template-columns:repeat(auto-fill,minmax(185px,1fr))}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:10px;text-align:center;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh);transition:.2s}
+.card:hover{transform:translateY(-3px)}
+.ph{height:118px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--gl);border-radius:14px;overflow:hidden;position:relative}
+.ph img{width:100%;height:100%;object-fit:cover}
+.bg{position:absolute;top:8px;right:8px;background:#e53935;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.card b{font-size:15px;font-weight:700}
+.pr{color:var(--ac);font-weight:800;font-size:14px}
+.mu{color:var(--mu);font-size:12px}
+.add{background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;border:0;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;cursor:pointer}
+.add:disabled{opacity:.45;cursor:not-allowed}
+.qty{display:flex;align-items:center;justify-content:space-between;background:var(--gl);border-radius:12px;padding:4px}
+.qty button{width:34px;height:34px;border:0;border-radius:9px;background:var(--g);color:#fff;font-size:18px;font-weight:700;cursor:pointer}
+.qty span{font-size:12px;font-weight:700;cursor:pointer;padding:0 4px}
+#bar{position:fixed;inset:auto 0 0 0;padding:12px;background:var(--card);border-top:1px solid var(--bd);display:none;z-index:15;box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+#bar button{max-width:640px;margin:auto;display:block;width:100%;padding:14px;border:0;border-radius:14px;background:var(--g);color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;overflow:auto;padding:14px;display:flex;justify-content:center;align-items:flex-start}
+.sheet .w{background:var(--bg);border-radius:22px;padding:20px;width:100%;max-width:600px;margin-top:10px;box-shadow:0 15px 40px rgba(0,0,0,.25)}
+.x{float:left;background:none;border:0;font-size:24px;cursor:pointer;color:var(--tx)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:14px}
+.qchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.qchips button{border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:3px 8px;font-family:inherit;font-size:11px;cursor:pointer}
+.qchips button:hover{border-color:var(--g);background:var(--gl)}
+.sm{background:var(--gl);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font-family:inherit;font-weight:600;cursor:pointer}
+.pk{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:2px solid var(--bd);background:var(--card);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.pk.on{border-color:var(--g);background:var(--gl);color:var(--g)}
+.big{background:#1ebe5d;color:#fff;border:0;border-radius:14px;padding:14px;width:100%;font-family:inherit;font-size:16px;font-weight:800;margin-top:12px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo" id="lg">🥬</div>
+    <div>
+      <h1 id="ttl">سوق الخضار</h1>
+      <div class="mu" style="color:rgba(255,255,255,.9)">طازج يومياً لباب بيتك</div>
+    </div>
+  </div>
+  <span class="status-pill" id="stPill">مفتوح الآن</span>
+</header>
+
+<div class="wrap">
+  <div id="bn"></div>
+  <div class="perks">
+    <span>🚚 توصيل سريع لحد البيت</span>
+    <span>🥬 خضار وفواكه طازجة</span>
+    <span>🧊 قسم المجمدات</span>
+    <span>💵 الدفع عند الاستلام</span>
+  </div>
+  <div class="chips" id="chips"></div>
+  <input class="in" id="q" placeholder="🔍 ابحث عن طماطم، خيار، مانجو...">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="bar"><button id="openCart"></button></div>
+<div id="app"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const DATA_URL = './store-data.json';
+const DEFAULT_STORE = {
+  name:"سوق الخضار", phone:"201001325508", closed:false, logo:"",
+  store:{lat:null,lng:null},
+  fee:{base:10,firstKm:1,perKm:5,maxKm:15,minOrder:50},
+  cats:[{n:'خضار',e:'🥬'},{n:'فواكه',e:'🍎'},{n:'ورقيات وأعشاب',e:'🌿'},{n:'مجمدة',e:'🧊'}],
+  banners:[],
+  items:[
+    {id:'i0',n:'طماطم بلدي',c:'خضار',p:15,o:20,s:250,v:1,img:''},
+    {id:'i1',n:'خيار صوب',c:'خضار',p:18,s:250,v:1,img:''},
+    {id:'i2',n:'بطاطس تحمير',c:'خضار',p:22,s:500,v:1,img:''},
+    {id:'i3',n:'بصل أحمر',c:'خضار',p:16,s:500,v:1,img:''},
+    {id:'i4',n:'تفاح أحمر',c:'فواكه',p:55,o:65,s:250,v:1,img:''},
+    {id:'i5',n:'موز بلدي',c:'فواكه',p:25,s:500,v:1,img:''},
+    {id:'i6',n:'نعناع طازج',c:'ورقيات وأعشاب',p:5,u:'pc',s:1,v:1,img:''},
+    {id:'i7',n:'ملوخية مجمدة 400 جم',c:'مجمدة',p:20,u:'pc',s:1,v:1,img:''}
+  ]
+};
+
+let S = JSON.parse(localStorage.getItem('VEG_STORE_DATA') || 'null') || DEFAULT_STORE;
+const cart={}; let cat='الكل', loc=null, pick=false, pt='', dtv='', addr='';
+
+async function loadStore(){
+  try{
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    if(res.ok){ S = await res.json(); }
+  }catch(e){}
+  init();
+}
+
+const nz=s=>s.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
+const stp=it=>it.u=='pc'?1:(it.s||250);
+const ul=it=>it.u=='pc'?'/ عبوة':'/ كجم';
+const fmt=g=>g>=1000?(g/1000).toString().replace('.',',')+' كجم':g+' جم';
+const fq=(it,q)=>it.u=='pc'?q+' عبوة':fmt(q);
+const money=n=>(Math.round(n*100)/100).toString().replace('.',',')+' ج';
+const cost=it=>it.u=='pc'?it.p*cart[it.id]:it.p*cart[it.id]/1000;
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+function init(){
+  $('#ttl').textContent = S.name; document.title = S.name;
+  if(S.logo) $('#lg').innerHTML = `<img src="${S.logo}" alt="">`;
+  $('#stPill').textContent = S.closed ? '⏸️ متوقف مؤقتاً' : '🟢 مفتوح للطلبات';
+  banners(); render();
+}
+
+function render(){
+  const vis = S.items.filter(i=>i.v);
+  const cats = [{n:'الكل',e:'🍽️'},...(vis.some(i=>i.o>i.p)?[{n:'عروض',e:'🔥'}]:[]),...S.cats.filter(c=>vis.some(i=>i.c==c.n))];
+  $('#chips').innerHTML = cats.map(c=>`<button class="cat ${c.n==cat?'on':''}" data-c="${c.n}"><i>${c.img?`<img src="${c.img}" alt="">`:c.e||'🥕'}</i>${c.n}</button>`).join('');
+  const q = $('#q').value.trim();
+  const list = vis.filter(i=>(cat=='الكل'||(cat=='عروض'?i.o>i.p:i.c==cat))&&(!q||nz(i.n).includes(nz(q))));
+  $('#grid').innerHTML = (S.closed?'<div style="grid-column:1/-1;background:#fff3cd;color:#664d03;padding:12px;border-radius:14px;text-align:center;font-weight:700">⏸️ الطلبات متوقفة مؤقتاً، نعود قريباً</div>':'') +
+    list.map(i=>{
+      const ok = i.p>0 && !S.closed, g = cart[i.id]||0;
+      return `<div class="card">
+        <div class="ph">${i.img?`<img src="${i.img}" alt="${esc(i.n)}" loading="lazy">`:(S.cats.find(c=>c.n==i.c)?.e||'🥕')}${i.o>i.p?`<span class="bg">خصم ${Math.round((1-i.p/i.o)*100)}%</span>`:''}</div>
+        <b>${esc(i.n)}</b>
+        <div class="pr">${ok?money(i.p)+' '+ul(i)+(i.o>i.p?` <s class="mu">${money(i.o)}</s>`:''):'غير متوفر حالياً'}</div>
+        ${g?`<div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,g)}</span><button data-p="${i.id}">+</button></div><div class="mu">${money(cost(i))}</div>`:
+            `<button class="add" data-p="${i.id}" ${ok?'':'disabled'}>+ أضف للسلة</button>`}
+      </div>`;
+    }).join('') || '<p class="mu" style="grid-column:1/-1;text-align:center">لا توجد أصناف مطابقة</p>';
+
+  const its = S.items.filter(i=>cart[i.id]), sub = its.reduce((a,i)=>a+cost(i),0);
+  $('#bar').style.display = its.length ? 'block' : 'none';
+  $('#openCart').textContent = `🧺 عرض السلة (${its.length} صنف) — ${money(sub)}`;
+}
+
+function banners(){
+  const B = (S.banners||[]).filter(b=>b.img), e = $('#bn');
+  if(!B.length){
+    e.innerHTML='<div class="bs"><div class="dp"><div><b>خضار وفواكه طازجة يومياً</b><span>فريش ومجمد · توصيل سريع لحد باب بيتك</span><em>اطلب الآن</em></div><i>🍅🥕<br>🍋🥦</i></div></div>';
+    return;
+  }
+  e.innerHTML = `<div class="bs">${B.map(b=>`<div ${b.link?`data-bl="${b.link}" style="cursor:pointer"`:''}><img src="${b.img}" alt=""></div>`).join('')}</div>`;
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target, d=t.dataset||{};
+  const cb=t.closest&&t.closest('[data-c]'); if(cb){cat=cb.dataset.c;render()}
+  const bl=t.closest&&t.closest('[data-bl]'); if(bl){cat=bl.dataset.bl;render()}
+  if(d.p){const it=S.items.find(i=>i.id==d.p);cart[it.id]=(cart[it.id]||0)+stp(it);render();if($('#app').firstChild)cartView()}
+  if(d.m){const it=S.items.find(i=>i.id==d.m);cart[it.id]-=stp(it);if(cart[it.id]<=0)delete cart[it.id];render();if($('#app').firstChild)cartView()}
+  if(d.set){cart[d.set]=+d.val;render();cartView()}
+  if(d.r){delete cart[d.r];render();cartView()}
+});
+$('#q').oninput=render;
+
+function dist(a,b,c,d){const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))}
+function delivery(){
+  if(pick||!loc)return{fee:0,km:null};
+  if(loc.manual||S.store.lat==null)return{fee:loc.manual?0:+S.fee.base,km:null,pending:!!loc.manual};
+  const F=S.fee, km=dist(S.store.lat,S.store.lng,loc.lat,loc.lng);
+  return{fee:Math.round(+F.base+Math.max(0,km-F.firstKm)*F.perKm),km};
+}
+
+function cartView(){
+  const its=S.items.filter(i=>cart[i.id]), A=$('#app');
+  if(!its.length){A.innerHTML='';return}
+  const nm=esc($('#cn')?.value||''), ph=esc($('#cp')?.value||''), nt=esc($('#cx')?.value||'');
+  if($('#ad'))addr=$('#ad').value; if($('#pt'))pt=$('#pt').value; if($('#dt'))dtv=$('#dt').value;
+  const sub=its.reduce((a,i)=>a+cost(i),0), D=delivery(), far=D.km!=null&&D.km>S.fee.maxKm;
+  A.innerHTML=`<div class="sheet"><div class="w">
+    <button class="x" id="cl">✕</button><h2>🧺 سلة المشتريات</h2>
+    ${its.map(i=>`<div class="row">
+      <div style="flex:1">
+        <b>${esc(i.n)}</b> <span class="mu">(${money(i.p)} ${ul(i)})</span>
+        ${i.u=='pc'
+          ? `<div class="qchips">${[1,2,3,5].map(v=>`<button data-set="${i.id}" data-val="${v}">${v} عبوة</button>`).join('')}</div>`
+          : `<div class="qchips">${[250,500,1000,2000].map(v=>`<button data-set="${i.id}" data-val="${v}">${fmt(v)}</button>`).join('')}</div>`}
+      </div>
+      <div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,cart[i.id])}</span><button data-p="${i.id}">+</button></div>
+      <b style="min-width:56px;text-align:left">${money(cost(i))}</b>
+      <button class="sm" data-r="${i.id}">🗑</button>
+    </div>`).join('')}
+    <input class="in" id="cn" placeholder="الاسم (مطلوب)" value="${nm}">
+    <input class="in" id="cp" placeholder="رقم التليفون (مطلوب)" inputmode="tel" value="${ph}">
+    <button class="pk ${pick?'on':''}" id="pk">🏬 استلام من المحل ${pick?'✓':''}</button>
+    ${pick
+      ? `<label class="mu">⏰ ميعاد الاستلام<input class="in" type="datetime-local" id="pt" value="${pt}"></label>`
+      : `<button class="sm" id="loc" style="width:100%;margin:4px 0">📍 ${loc?'تم تحديد موقعك ✓':'تحديد موقعي للتوصيل (مطلوب)'}</button>
+         <input class="in" id="ml" placeholder="أو الصق رابط موقعك من خرائط جوجل">
+         <textarea class="in" id="ad" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، العمارة، الشقة) — مطلوب">${esc(addr)}</textarea>`}
+    <textarea class="in" id="cx" rows="2" placeholder="ملاحظات إضافية (اختياري)">${nt}</textarea>
+    <div class="row"><span>مجموع المشتريات</span><b>${money(sub)}</b></div>
+    ${S.fee.minOrder>0?`<div class="mu">الحد الأدنى للطلب: ${money(S.fee.minOrder)}</div>`:''}
+    <div class="row"><span>رسوم التوصيل</span><b>${pick?'بدون رسوم':D.pending?'تُحدد عند التأكيد':loc?money(D.fee):'بعد تحديد الموقع'}</b></div>
+    <div class="row" style="font-size:17px"><b>الإجمالي</b><b>${money(sub+D.fee)}</b></div>
+    <button class="big" id="go">💬 إرسال الطلب عبر واتساب</button>
+    <p id="err" style="color:#c62828;font-size:13px;font-weight:700">${far?'عذراً، موقعك خارج نطاق التوصيل ('+S.fee.maxKm+' كم).':''}</p>
+  </div></div>`;
+
+  $('#cl').onclick=()=>A.innerHTML='';
+  $('#pk').onclick=()=>{pick=!pick;cartView()};
+  if(!pick){
+    $('#loc').onclick=()=>navigator.geolocation?.getCurrentPosition(p=>{loc={lat:p.coords.latitude,lng:p.coords.longitude};cartView()},()=>$('#err').textContent='فعّل إذن الموقع أو الصق رابط جوجل ماب');
+    $('#ml').onchange=()=>{const v=$('#ml').value.trim(),m=v.match(/(-?\d{1,2}\.\d{3,})[^\d-]+(-?\d{1,3}\.\d{3,})/);if(m){loc={lat:+m[1],lng:+m[2]};cartView()}else if(/^https?:\/\//.test(v)){loc={manual:v};cartView()}};
+  }
+  $('#go').onclick=()=>{
+    const n=$('#cn').value.trim(), p=$('#cp').value.trim(), x=$('#cx').value.trim(), E=s=>$('#err').textContent=s;
+    if(!n)return E('من فضلك اكتب اسمك');
+    if(p.replace(/\D/g,'').length<8)return E('من فضلك اكتب رقم تليفون صحيح');
+    if(sub<(+S.fee.minOrder||0))return E('الحد الأدنى للطلب '+money(S.fee.minOrder));
+    if(!pick&&$('#ad').value.trim().length<8)return E('اكتب عنوان التوصيل بالتفصيل');
+    if(!pick&&!loc)return E('حدد موقعك للتوصيل');
+    if(far)return E('موقعك خارج نطاق التوصيل');
+    const lk=loc&&(loc.manual||`https://www.google.com/maps?q=${loc.lat},${loc.lng}`);
+    let m=`🧾 *طلب جديد - ${S.name}*
+👤 الاسم: ${n}
+📱 الهاتف: ${p}
+`+(pick?`🏬 استلام من المحل
+`:`🏠 العنوان: ${$('#ad').value.trim()}
+📍 الموقع: ${lk}
+`)+`──────────────
+`;
+    its.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}
+`});
+    m+=`──────────────
+المجموع: ${money(sub)}
+التوصيل: ${pick?'مجاني':money(D.fee)}
+*الإجمالي: ${money(sub+D.fee)}*`+(x?`
+📝 ملاحظات: ${x}`:'');
+    window.open('https://wa.me/'+S.phone+'?text='+encodeURIComponent(m),'_blank');
+  };
+}
+$('#openCart').onclick=cartView;
+loadStore();
+</script>
+</body>
+</html>

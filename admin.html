@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة تحكم المتجر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7f4;--card:#fff;--tx:#1b261c;--mu:#607061;--g:#2e7d32;--gl:#e8f5e9;--bd:#dce5dc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Cairo',Tahoma,sans-serif;padding:16px}
+.box{max-width:1000px;margin:auto;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.05);margin-bottom:16px}
+h1,h2,h3{margin-top:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--gl);border:1px solid var(--bd);border-radius:16px;padding:14px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--g)}
+.f2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.in{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font-family:inherit;font-size:14px;margin-top:4px}
+.btn{background:var(--g);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-family:inherit;font-weight:700;cursor:pointer}
+.sm{background:var(--gl);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;font-family:inherit;font-weight:600;cursor:pointer}
+.tb{overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}
+th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
+.login{max-width:380px;margin:80px auto;text-align:center}
+.toast{position:fixed;bottom:16px;left:16px;background:#1b5e20;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;display:none}
+</style>
+</head>
+<body>
+
+<div id="loginBox" class="box login">
+  <h2>🔐 دخول إدارة المتجر</h2>
+  <p style="color:var(--mu);font-size:13px">أدخل كلمة مرور المالك للوصول إلى لوحة التحكم</p>
+  <input class="in" type="password" id="passInput" placeholder="كلمة المرور (الافتراضية: 1234)">
+  <button class="btn" style="width:100%;margin-top:12px" id="loginBtn">دخول</button>
+  <p id="loginErr" style="color:#c62828;font-size:13px"></p>
+</div>
+
+<div id="adminPanel" style="display:none">
+  <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div>
+      <h1 style="margin:0;font-size:22px">⚙️ لوحة تحكم: <span id="storeTitle"></span></h1>
+      <span style="color:var(--mu);font-size:13px">مفصولة بالكامل عن صفحة العملاء</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="saveAll">💾 حفظ وتحديث المتجر</button>
+      <button class="sm" id="exportJson">⬇️ تحميل store-data.json</button>
+      <button class="sm" id="logoutBtn">خروج</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="box">
+    <h3>🏪 بيانات المتجر الأساسية</h3>
+    <div class="f2">
+      <label>اسم المتجر<input class="in" id="sName"></label>
+      <label>رقم الواتساب (بكود الدولة)<input class="in" id="sPhone"></label>
+      <label>رابط الشعار (اختياري)<input class="in" id="sLogo" placeholder="https://..."></label>
+      <label style="display:flex;align-items:center;gap:8px;padding-top:24px">
+        <input type="checkbox" id="sClosed"> ⏸️ إيقاف استقبال الطلبات مؤقتاً
+      </label>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>🚚 إعدادات التوصيل والحد الأدنى</h3>
+    <div class="f2">
+      <label>سعر أول كيلومتر (ج)<input class="in" type="number" id="fBase"></label>
+      <label>طول الشريحة الأولى (كم)<input class="in" type="number" step="0.1" id="fFirst"></label>
+      <label>سعر كل كم إضافي (ج)<input class="in" type="number" step="0.5" id="fPer"></label>
+      <label>أقصى نطاق توصيل (كم)<input class="in" type="number" id="fMax"></label>
+      <label>الحد الأدنى للطلب (ج)<input class="in" type="number" id="fMin"></label>
+    </div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="sm" id="setLoc">📍 تحديد موقع المحل الحالي</button>
+      <span id="locText" style="font-size:13px;color:var(--mu)"></span>
+    </div>
+  </div>
+
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h3 style="margin:0">🥦 إدارة الأصناف</h3>
+      <div style="display:flex;gap:8px">
+        <input class="in" id="searchItem" placeholder="🔍 بحث..." style="width:180px;margin:0">
+        <button class="btn" id="addItem">+ إضافة صنف</button>
+      </div>
+    </div>
+    <div class="tb">
+      <table>
+        <thead>
+          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>رابط الصورة</th><th>ظاهر</th><th>حذف</th></tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">تم حفظ التغييرات بنجاح ✓</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const ADMIN_PASS = '1234';
+
+const DEFAULT_DATA = {
+  name:"سوق الخضار", phone:"201001325508", closed:false, logo:"",
+  store:{lat:null,lng:null},
+  fee:{base:10,firstKm:1,perKm:5,maxKm:15,minOrder:50},
+  cats:[{n:'خضار',e:'🥬'},{n:'فواكه',e:'🍎'},{n:'ورقيات وأعشاب',e:'🌿'},{n:'مجمدة',e:'🧊'}],
+  banners:[],
+  items:[
+    {id:'i0',n:'طماطم بلدي',c:'خضار',p:15,o:20,s:250,v:1,img:''},
+    {id:'i1',n:'خيار صوب',c:'خضار',p:18,s:250,v:1,img:''},
+    {id:'i2',n:'بطاطس تحمير',c:'خضار',p:22,s:500,v:1,img:''},
+    {id:'i3',n:'بصل أحمر',c:'خضار',p:16,s:500,v:1,img:''},
+    {id:'i4',n:'تفاح أحمر',c:'فواكه',p:55,o:65,s:250,v:1,img:''},
+    {id:'i5',n:'موز بلدي',c:'فواكه',p:25,s:500,v:1,img:''},
+    {id:'i6',n:'نعناع طازج',c:'ورقيات وأعشاب',p:5,u:'pc',s:1,v:1,img:''},
+    {id:'i7',n:'ملوخية مجمدة 400 جم',c:'مجمدة',p:20,u:'pc',s:1,v:1,img:''}
+  ]
+};
+
+let S = JSON.parse(localStorage.getItem('VEG_STORE_DATA') || 'null') || DEFAULT_DATA;
+
+function notify(msg){
+  const t=$('#toast'); t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
+}
+
+$('#loginBtn').onclick=()=>{
+  if($('#passInput').value === ADMIN_PASS){
+    sessionStorage.setItem('VEG_AUTH','1');
+    showAdmin();
+  }else{
+    $('#loginErr').textContent='كلمة المرور غير صحيحة';
+  }
+};
+if(sessionStorage.getItem('VEG_AUTH')==='1') showAdmin();
+$('#logoutBtn').onclick=()=>{sessionStorage.removeItem('VEG_AUTH');location.reload()};
+
+function showAdmin(){
+  $('#loginBox').style.display='none';
+  $('#adminPanel').style.display='block';
+  renderAdmin();
+}
+
+function renderAdmin(){
+  $('#storeTitle').textContent = S.name;
+  $('#sName').value = S.name;
+  $('#sPhone').value = S.phone;
+  $('#sLogo').value = S.logo || '';
+  $('#sClosed').checked = !!S.closed;
+
+  $('#fBase').value = S.fee.base;
+  $('#fFirst').value = S.fee.firstKm;
+  $('#fPer').value = S.fee.perKm;
+  $('#fMax').value = S.fee.maxKm;
+  $('#fMin').value = S.fee.minOrder || 0;
+  $('#locText').textContent = S.store.lat!=null ? `الإحداثيات: ${S.store.lat.toFixed(5)}, ${S.store.lng.toFixed(5)}` : 'لم يتم تحديد موقع المحل بعد';
+
+  const visCount = S.items.filter(i=>i.v).length;
+  const offersCount = S.items.filter(i=>i.v && i.o>i.p).length;
+  $('#stats').innerHTML = `
+    <div class="stat"><b>${S.items.length}</b><span>إجمالي الأصناف</span></div>
+    <div class="stat"><b>${visCount}</b><span>الأصناف الظاهرة</span></div>
+    <div class="stat"><b>${offersCount}</b><span>عروض نشطة</span></div>
+    <div class="stat"><b>${S.fee.minOrder||0} ج</b><span>الحد الأدنى للطلب</span></div>
+  `;
+
+  const q = $('#searchItem').value.trim();
+  $('#itemsBody').innerHTML = S.items.map((it,idx)=>{
+    if(q && !it.n.includes(q)) return '';
+    return `<tr>
+      <td><input class="in" data-idx="${idx}" data-k="n" value="${it.n}"></td>
+      <td><select class="in" data-idx="${idx}" data-k="c">${S.cats.map(c=>`<option ${c.n==it.c?'selected':''}>${c.n}</option>`).join('')}</select></td>
+      <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="p" value="${it.p}" style="width:75px"></td>
+      <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="o" value="${it.o||''}" style="width:75px"></td>
+      <td><select class="in" data-idx="${idx}" data-k="u"><option value="kg" ${it.u!='pc'?'selected':''}>كيلو</option><option value="pc" ${it.u=='pc'?'selected':''}>عبوة</option></select></td>
+      <td><input class="in" data-idx="${idx}" data-k="img" value="${it.img||''}" placeholder="رابط الصورة"></td>
+      <td><input type="checkbox" data-idx="${idx}" data-k="v" ${it.v?'checked':''}></td>
+      <td><button class="sm" data-del="${idx}">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+$('#itemsBody').oninput=e=>{
+  const d=e.target.dataset; if(d.idx==null)return;
+  const it=S.items[d.idx];
+  it[d.k] = e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value);
+  if(d.k=='u') it.s = e.target.value=='pc'?1:250;
+};
+$('#itemsBody').onclick=e=>{
+  const del=e.target.dataset.del;
+  if(del!=null && confirm('حذف هذا الصنف؟')){S.items.splice(del,1);renderAdmin()}
+};
+$('#searchItem').oninput=renderAdmin;
+$('#addItem').onclick=()=>{
+  S.items.unshift({id:'i'+Date.now(),n:'صنف جديد',c:S.cats[0].n,p:20,s:250,v:1,img:''});
+  renderAdmin();
+};
+$('#setLoc').onclick=()=>{
+  navigator.geolocation?.getCurrentPosition(p=>{
+    S.store={lat:p.coords.latitude,lng:p.coords.longitude};
+    renderAdmin(); notify('تم حفظ إحداثيات المحل ✓');
+  },()=>alert('اسمح للمتصفح بالوصول للموقع'));
+};
+
+$('#saveAll').onclick=()=>{
+  S.name = $('#sName').value.trim() || 'سوق الخضار';
+  S.phone = $('#sPhone').value.trim();
+  S.logo = $('#sLogo').value.trim();
+  S.closed = $('#sClosed').checked;
+  S.fee = {
+    base:+$('#fBase').value, firstKm:+$('#fFirst').value,
+    perKm:+$('#fPer').value, maxKm:+$('#fMax').value, minOrder:+$('#fMin').value
+  };
+  localStorage.setItem('VEG_STORE_DATA', JSON.stringify(S));
+  renderAdmin();
+  notify('تم الحفظ وتحديث بيانات المتجر فوراً ✓');
+};
+
+$('#exportJson').onclick=()=>{
+  $('#saveAll').click();
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'store-data.json';
+  a.click();
+};
+</script>
+</body>
+</html>
