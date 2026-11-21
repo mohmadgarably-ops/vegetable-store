@@ -1,8 +1,8 @@
 {
  "name": "سوق الخضار",
  "phone": "201001325508",
- "closed": false,
- "logo": "",
+ "closed": true,
+ "logo": "img/acf4c9f2108b042379e6a57a.png",
  "store": {
   "lat": null,
   "lng": null
