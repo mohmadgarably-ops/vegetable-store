@@ -737,27 +737,30 @@
    "n": "بطيخ",
    "c": "فواكه",
    "p": 34,
-   "s": 500,
+   "s": 1,
    "v": 1,
-   "img": "img/fe40d03a1ddd8f8c0d927474.jpg"
+   "img": "img/fe40d03a1ddd8f8c0d927474.jpg",
+   "u": "pc"
   },
   {
    "id": "i73",
    "n": "شمام",
    "c": "فواكه",
    "p": 34,
-   "s": 250,
+   "s": 1,
    "v": 1,
-   "img": "img/e0afcbfbd348b889a9696ce0.jpg"
+   "img": "img/e0afcbfbd348b889a9696ce0.jpg",
+   "u": "pc"
   },
   {
    "id": "i74",
    "n": "كنتالوب",
    "c": "فواكه",
    "p": 34,
-   "s": 250,
+   "s": 1,
    "v": 1,
-   "img": "img/7bf17222a97ddc9e1f7dcd26.jpg"
+   "img": "img/7bf17222a97ddc9e1f7dcd26.jpg",
+   "u": "pc"
   },
   {
    "id": "i75",
