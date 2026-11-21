@@ -80,6 +80,16 @@ h1{margin:0;font-size:20px;font-weight:800}
 .sheet .w{background:var(--bg);border-radius:22px;padding:20px;width:100%;max-width:600px;margin-top:10px;box-shadow:0 15px 40px rgba(0,0,0,.25)}
 .x{float:left;background:none;border:0;font-size:24px;cursor:pointer;color:var(--tx)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:14px}
+.ci{padding:10px 0;border-bottom:1px solid var(--bd)}
+.ct{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ct b{font-size:15px}
+.cc{display:flex;align-items:center;gap:8px;margin-top:6px}
+.cc .qty{flex:0 0 auto;min-width:140px}
+.cc .qty span{white-space:nowrap;min-width:60px;text-align:center}
+.cc .cp{margin-inline-start:auto;font-size:15px;white-space:nowrap}
+.cf{position:sticky;bottom:-20px;background:var(--bg);padding:10px 0 4px;margin-top:6px;border-top:2px solid var(--bd)}
+.cf .tot{display:flex;justify-content:space-between;font-size:17px;font-weight:800}
+.cf .big{margin-top:8px}
 .qchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .qchips button{border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:3px 8px;font-family:inherit;font-size:11px;cursor:pointer}
 .qchips button:hover{border-color:var(--g);background:var(--gl)}
@@ -296,21 +306,20 @@ function cartView(){
   const sub=subTotal(), min=+S.fee.minOrder||0;
   A.innerHTML=`<div class="sheet"><div class="w">
     <button class="x" id="cl">✕</button><h2>🧺 سلة المشتريات</h2>
-    ${its.map(i=>`<div class="row">
-      <div style="flex:1">
-        <b>${esc(i.n)}</b> <span class="mu">(${money(i.p)} ${ul(i)})</span>
-        <div class="qchips">${U(i)=='kg'
-          ? [250,500,1000,2000].map(v=>`<button data-set="${i.id}" data-val="${v}">${fmt(v)}</button>`).join('')
-          : [1,2,3,5].map(v=>`<button data-set="${i.id}" data-val="${v}">${v} ${UN[U(i)].l}</button>`).join('')}</div>
+    ${its.map(i=>`<div class="ci">
+      <div class="ct"><b>${esc(i.n)}</b><span class="mu">${money(i.p)} ${ul(i)}</span></div>
+      <div class="cc">
+        <div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,cart[i.id])}</span><button data-p="${i.id}">+</button></div>
+        <b class="cp">${money(cost(i))}</b>
+        <button class="sm" data-r="${i.id}" title="حذف الصنف">🗑</button>
       </div>
-      <div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,cart[i.id])}</span><button data-p="${i.id}">+</button></div>
-      <b style="min-width:56px;text-align:left">${money(cost(i))}</b>
-      <button class="sm" data-r="${i.id}">🗑</button>
     </div>`).join('')}
-    <div class="row" style="font-size:17px"><b>مجموع المشتريات</b><b>${money(sub)}</b></div>
-    ${min>0?`<div class="mu">الحد الأدنى للطلب: ${money(min)}</div>`:''}
-    <button class="big" id="next" style="background:var(--g)">التالي: بيانات الطلب والتوصيل ←</button>
-    <p id="err" style="color:#c62828;font-size:13px;font-weight:700"></p>
+    <div class="cf">
+      <div class="tot"><span>مجموع المشتريات</span><span>${money(sub)}</span></div>
+      ${min>0?`<div class="mu">الحد الأدنى للطلب: ${money(min)}</div>`:''}
+      <button class="big" id="next" style="background:var(--g)">التالي: بيانات الطلب والتوصيل ←</button>
+      <p id="err" style="color:#c62828;font-size:13px;font-weight:700;margin:6px 0 0"></p>
+    </div>
   </div></div>`;
   $('#cl').onclick=()=>{A.innerHTML='';view=''};
   $('#next').onclick=()=>{

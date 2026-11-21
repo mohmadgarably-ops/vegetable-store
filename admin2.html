@@ -19,7 +19,7 @@ h1,h2,h3{margin-top:0}
 .btn{background:var(--g);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-family:inherit;font-weight:700;cursor:pointer}
 .sm{background:var(--gl);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;font-family:inherit;font-weight:600;cursor:pointer}
 .tb{overflow-x:auto;margin-top:10px}
-table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}
+table{width:100%;border-collapse:collapse;min-width:800px;font-size:13px}
 th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
 .login{max-width:380px;margin:80px auto;text-align:center}
 .thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--gl);border:1px solid var(--bd)}
@@ -44,7 +44,7 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
   <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
     <div>
       <h1 style="margin:0;font-size:22px">⚙️ لوحة تحكم: <span id="storeTitle"></span></h1>
-      <span style="color:var(--mu);font-size:13px">مفصولة بالكامل عن صفحة العملاء · نسخة 5 (admin2)</span>
+      <span style="color:var(--mu);font-size:13px">مفصولة بالكامل عن صفحة العملاء · نسخة 6 (admin2)</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <span id="apState" style="font-size:13px;font-weight:700;color:var(--mu)"></span>
@@ -106,6 +106,7 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <h3 style="margin:0">🥦 إدارة الأصناف</h3>
       <div style="display:flex;gap:8px">
+        <select class="in" id="bulkS" style="width:auto;margin:0"><option value="250">250 جم</option><option value="500">500 جم</option><option value="1000">1 كجم</option></select><button class="sm" id="bulkBtn" title="يطبّق على كل الأصناف بالكيلو">تطبيق أقل وزن على كل أصناف الكيلو</button>
         <input class="in" id="searchItem" placeholder="🔍 بحث..." style="width:180px;margin:0">
         <button class="btn" id="addItem">+ إضافة صنف</button>
       </div>
@@ -113,7 +114,7 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     <div class="tb">
       <table>
         <thead>
-          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>الصورة</th><th>الحالة في المتجر</th><th>حذف</th></tr>
+          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>أقل وزن</th><th>الصورة</th><th>الحالة في المتجر</th><th>حذف</th></tr>
         </thead>
         <tbody id="itemsBody"></tbody>
       </table>
@@ -253,6 +254,7 @@ function renderAdmin(){
       <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="p" value="${it.p}" style="width:75px"></td>
       <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="o" value="${it.o||''}" style="width:75px"></td>
       <td><select class="in" data-idx="${idx}" data-k="u"><option value="kg" ${(it.u!='pc'&&it.u!='bn')?'selected':''}>كيلو</option><option value="pc" ${it.u=='pc'?'selected':''}>قطعة</option><option value="bn" ${it.u=='bn'?'selected':''}>ربطة</option></select></td>
+      <td>${(it.u!='pc'&&it.u!='bn')?`<select class="in" data-idx="${idx}" data-k="s" style="min-width:95px"><option value="250" ${(it.s||250)==250?'selected':''}>250 جم</option><option value="500" ${it.s==500?'selected':''}>500 جم</option><option value="1000" ${it.s==1000?'selected':''}>1 كجم</option></select>`:'<span style="color:var(--mu)">—</span>'}</td>
       <td><div style="display:flex;gap:6px;align-items:center">${it.img?`<img class="thumb" src="${it.img}" alt="">`:''}<button class="plus" data-up="${idx}" title="اختيار صورة من جهازك">+</button>${it.img?`<button class="sm" data-rmimg="${idx}">✕</button>`:''}</div></td>
       <td><select class="in" data-idx="${idx}" data-k="v" style="min-width:150px"><option value="1" ${it.v==1?'selected':''}>✅ ظاهر ومتاح للبيع</option><option value="2" ${it.v==2?'selected':''}>🚫 ظاهر وغير متاح</option><option value="0" ${!it.v?'selected':''}>🙈 مخفي من المتجر</option></select></td>
       <td><button class="sm" data-del="${idx}">🗑</button></td>
@@ -290,8 +292,8 @@ function renderBanners(){
 $('#itemsBody').oninput=e=>{
   const d=e.target.dataset; if(d.idx==null)return;
   const it=S.items[d.idx];
-  it[d.k] = d.k=='v' ? +e.target.value : (e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value));
-  if(d.k=='u') it.s = e.target.value=='kg'?250:1;
+  it[d.k] = (d.k=='v'||d.k=='s') ? +e.target.value : (e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value));
+  if(d.k=='u'){ it.s = e.target.value=='kg'?250:1; renderAdmin(); }
 };
 $('#itemsBody').onclick=e=>{
   const D=e.target.dataset, del=D.del;
@@ -300,6 +302,7 @@ $('#itemsBody').onclick=e=>{
   if(del!=null && confirm('حذف هذا الصنف؟')){S.items.splice(del,1);renderAdmin()}
 };
 $('#searchItem').oninput=renderAdmin;
+$('#bulkBtn').onclick=()=>{ if(!confirm('تغيير أقل وزن لكل الأصناف المباعة بالكيلو؟')) return; const v=+$('#bulkS').value; S.items.forEach(it=>{ if(it.u!='pc'&&it.u!='bn') it.s=v }); renderAdmin(); notify('تم التطبيق ✓ ثم اضغط نشر'); };
 $('#addItem').onclick=()=>{
   S.items.unshift({id:'i'+Date.now(),n:'صنف جديد',c:S.cats[0]?S.cats[0].n:'',p:20,u:'kg',s:250,v:1,img:''});
   renderAdmin();
