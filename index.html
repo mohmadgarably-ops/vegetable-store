@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2e7d32">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="سوق الخضار">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>سوق الخضار</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -115,6 +122,16 @@ button,a{-webkit-tap-highlight-color:transparent}
   .noprint{display:none!important}
   .inv{border:0;border-radius:0;padding:0}
 }
+/* ===== تثبيت التطبيق ===== */
+#inst{margin:10px 14px 0;background:#fff;border:1px solid var(--bd);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh)}
+#inst[hidden]{display:none}
+#inst .t{flex:1;font-size:13px;font-weight:700;line-height:1.4}
+#inst button,#inst a{font-family:inherit;border:0;border-radius:12px;padding:9px 12px;font-weight:800;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+#inst .go{background:var(--g);color:#fff}#inst .apk{background:var(--gl);color:var(--g)}#inst .x{background:none;color:var(--mu);padding:6px 8px;font-size:16px}
+#instHelp{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+#instHelp[hidden]{display:none}
+#instHelp .bx{background:#fff;width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));line-height:1.9}
+#instHelp .bx h3{margin:0 0 6px}#instHelp .bx button{width:100%;margin-top:10px;background:var(--g);color:#fff;border:0;border-radius:14px;padding:12px;font-family:inherit;font-weight:800;font-size:15px}
 </style>
 </head>
 <body>
@@ -128,6 +145,8 @@ button,a{-webkit-tap-highlight-color:transparent}
   </div>
   <span class="status-pill" id="stPill">مفتوح الآن</span>
 </header>
+<div id="inst" hidden><div class="t" id="instT">📲 ثبّت تطبيق المتجر على جهازك</div><a class="apk" id="instApk" hidden download>⬇️ APK</a><button class="go" id="instGo" type="button">تثبيت</button><button class="x" id="instX" type="button" aria-label="إغلاق">✕</button></div>
+<div id="instHelp" hidden><div class="bx"><h3>تثبيت على الآيفون 🍏</h3><div>١) افتح الرابط من متصفح <b>Safari</b>.<br>٢) اضغط زر المشاركة <b>⬆️</b> (أسفل الشاشة).<br>٣) اختر <b>«إضافة إلى الشاشة الرئيسية»</b>.<br>٤) اضغط <b>إضافة</b> ✅</div><button type="button" id="instOk">تمام</button></div></div>
 
 <div class="wrap">
   <div id="bn"></div>
@@ -441,6 +460,24 @@ function showInvoice(v,wa,msg){
 }
 $('#openCart').onclick=cartView;
 loadStore();
+// ===== PWA: تسجيل + زر التثبيت =====
+(function(){
+  const https=location.protocol==='https:';
+  if(https&&'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  if(standalone||!https) return;
+  try{ if(Date.now()-(+localStorage.getItem('VEG_INST_NO')||0)<7*864e5) return }catch(e){}
+  const ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), android=/Android/.test(ua);
+  const box=$('#inst'); let dp=null;
+  const show=()=>{box.hidden=false};
+  $('#instX').onclick=()=>{box.hidden=true;try{localStorage.setItem('VEG_INST_NO',Date.now())}catch(e){}};
+  $('#instOk').onclick=()=>{$('#instHelp').hidden=true};
+  if(ios){ $('#instGo').textContent='كيف أثبّت؟'; $('#instGo').onclick=()=>{$('#instHelp').hidden=false}; show(); }
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('#instGo').onclick=async()=>{dp.prompt();try{await dp.userChoice}catch(_){}dp=null;box.hidden=true};show()});
+  window.addEventListener('appinstalled',()=>{box.hidden=true});
+  if(android) fetch('store.apk',{method:'HEAD',cache:'no-store'}).then(r=>{ if(r.ok){const a=$('#instApk');a.href='store.apk';a.hidden=false;show();
+      if(!dp&&!ios){$('#instGo').hidden=true;$('#instT').textContent='📲 حمّل تطبيق المتجر لأندرويد'} } }).catch(()=>{});
+})();
 </script>
 </body>
 </html>
