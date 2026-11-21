@@ -84,6 +84,37 @@ h1{margin:0;font-size:20px;font-weight:800}
 #chips{scroll-margin-top:72px}
 .ub{display:inline-block;background:var(--gl);color:var(--g);border:1px solid var(--bd);border-radius:8px;padding:1px 10px;font-size:11px;font-weight:800}
 #map{height:280px;border-radius:14px;border:1px solid var(--bd);margin:8px 0;isolation:isolate}
+/* ===== الفاتورة ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a{-webkit-tap-highlight-color:transparent}
+.sheet{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(14px + env(safe-area-inset-bottom));padding-top:calc(14px + env(safe-area-inset-top))}
+.inv{background:#fff;color:#182619;border:1px solid var(--bd);border-radius:18px;padding:18px 16px;font-size:14px;line-height:1.6;word-break:break-word}
+.inv-h{text-align:center;padding-bottom:12px;border-bottom:2px dashed var(--bd)}
+.inv-logo{font-size:34px;line-height:1.2}.inv-logo img{width:54px;height:54px;object-fit:contain;border-radius:12px}
+.inv-h h2{margin:2px 0 0;font-size:20px}
+.inv-ok{display:inline-block;margin-top:8px;background:var(--gl);color:var(--g);font-weight:800;border-radius:999px;padding:4px 14px;font-size:13px}
+.inv-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mu)}
+.inv-sec{padding:12px 0;border-bottom:1px dashed var(--bd)}
+.inv-t{font-weight:800;margin-bottom:6px;color:var(--g)}
+.inv-r{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+.inv-r span:first-child{color:var(--mu);flex:none}.inv-r b{text-align:left}
+.inv-i{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.inv-i:last-child{border-bottom:0}.inv-i .nm{font-weight:700}.inv-i .tt{font-weight:800;white-space:nowrap}
+.inv-tot{padding-top:10px}.inv-tot .inv-r{font-size:15px}
+.inv-tot .gt{margin-top:6px;padding:10px 12px;background:var(--gl);border-radius:12px;font-size:18px;font-weight:800;color:var(--g)}
+.inv-f{text-align:center;margin-top:14px;color:var(--mu);font-size:13px}
+.inv-act{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.inv-act .big{display:block;text-align:center;text-decoration:none;margin-top:0}
+.inv-act .row2{display:flex;gap:8px}.inv-act .row2 .sm{flex:1;padding:12px 8px;font-size:14px}
+@media print{
+  @page{margin:10mm}
+  body{background:#fff;padding:0}
+  body>*:not(#app){display:none!important}
+  .sheet{position:static!important;background:none!important;padding:0!important;overflow:visible!important;display:block!important}
+  .sheet .w{box-shadow:none!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important}
+  .noprint{display:none!important}
+  .inv{border:0;border-radius:0;padding:0}
+}
 </style>
 </head>
 <body>
@@ -356,13 +387,57 @@ function checkout(){
     if(!pick&&addr.trim().length<5)return E('اكتب العنوان بالتفصيل (الشارع، العمارة، الشقة)');
     const its=S.items.filter(i=>cart[i.id]);
     const lk=loc&&`https://www.google.com/maps?q=${loc.lat},${loc.lng}`;
-    let m=`🧾 *طلب جديد - ${S.name}*\n👤 الاسم: ${n}\n📱 الهاتف: ${p}\n`+
+    const dd=new Date(), pd=z=>String(z).padStart(2,'0'), no=`${pd(dd.getDate())}${pd(dd.getMonth()+1)}-${pd(dd.getHours())}${pd(dd.getMinutes())}${pd(dd.getSeconds())}`;
+    let dstr; try{dstr=dd.toLocaleString('ar-EG-u-nu-latn',{dateStyle:'medium',timeStyle:'short'})}catch(e){dstr=dd.toLocaleString()}
+    let m=`🧾 *طلب جديد #${no} - ${S.name}*\n🕒 ${dstr}\n👤 الاسم: ${n}\n📱 الهاتف: ${p}\n`+
       (pick?`🏬 استلام من المحل${pt?'\n⏰ الميعاد: '+pt.replace('T',' '):''}\n`:`🏠 العنوان: ${addr.trim()}\n📍 الموقع: ${lk}\n`)+`──────────────\n`;
     its.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}\n`});
     const fee=pick?0:D.fee;
     m+=`──────────────\nالمجموع: ${money(sub)}\nالتوصيل: ${pick?'مجاني':money(fee)}\n*الإجمالي: ${money(sub+fee)}*`+(x?`\n📝 ملاحظات: ${x}`:'');
-    window.open('https://wa.me/'+S.phone+'?text='+encodeURIComponent(m),'_blank');
+    const wa='https://wa.me/'+String(S.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(m);
+    showInvoice({no,date:dstr,name:n,phone:p,pick,pt,addr:addr.trim(),note:x,sub,fee,
+      lines:its.map(i=>({n:i.n,q:fq(i,cart[i.id]),pr:money(i.p)+' '+ul(i),t:money(cost(i))}))},wa,m);
+    try{window.open(wa,'_blank')}catch(e){}
   };
+}
+function showInvoice(v,wa,msg){
+  if(map){map.remove();map=null;mk=null}
+  view='inv';
+  const R=(k,val)=>val?`<div class="inv-r"><span>${k}</span><b>${val}</b></div>`:'';
+  $('#app').innerHTML=`<div class="sheet"><div class="w">
+    <div class="inv" id="inv">
+      <div class="inv-h">
+        <div class="inv-logo">${S.logo?`<img src="${S.logo}" alt="">`:'🧾'}</div>
+        <h2>${esc(S.name)}</h2><div class="mu">فاتورة طلب</div>
+        <div class="inv-ok">✅ تم تجهيز طلبك</div>
+        <div class="inv-meta"><span>رقم الطلب: <b dir="ltr">#${esc(v.no)}</b></span><span>${esc(v.date)}</span></div>
+      </div>
+      <div class="inv-sec"><div class="inv-t">بيانات العميل</div>
+        ${R('الاسم',esc(v.name))}${R('الهاتف',`<span dir="ltr">${esc(v.phone)}</span>`)}
+        ${R('طريقة الاستلام',v.pick?'🏬 استلام من المحل':'🚚 توصيل للمنزل')}
+        ${v.pick?R('ميعاد الاستلام',esc((v.pt||'').replace('T',' '))):R('العنوان',esc(v.addr))}
+        ${R('ملاحظات',esc(v.note))}
+      </div>
+      <div class="inv-sec"><div class="inv-t">الأصناف (${v.lines.length})</div>
+        ${v.lines.map(l=>`<div class="inv-i"><div><div class="nm">${esc(l.n)}</div><div class="mu">${esc(l.q)} × ${esc(l.pr)}</div></div><div class="tt">${esc(l.t)}</div></div>`).join('')}
+      </div>
+      <div class="inv-tot">
+        <div class="inv-r"><span>مجموع المشتريات</span><b>${money(v.sub)}</b></div>
+        <div class="inv-r"><span>رسوم التوصيل</span><b>${v.pick?'مجاني':money(v.fee)}</b></div>
+        <div class="inv-r gt"><span style="color:inherit">الإجمالي</span><b>${money(v.sub+(v.pick?0:v.fee))}</b></div>
+      </div>
+      <div class="inv-f">شكراً لثقتكم 💚</div>
+    </div>
+    <div class="inv-act noprint">
+      <a class="big" id="invWa" href="${wa}" target="_blank" rel="noopener">💬 إرسال الطلب عبر واتساب</a>
+      <div class="row2"><button class="sm" id="invPrint" type="button">🖨️ طباعة / حفظ PDF</button><button class="sm" id="invShare" type="button">📤 مشاركة</button></div>
+      <div class="row2"><button class="sm" id="invClose" type="button">✕ إغلاق</button><button class="sm" id="invNew" type="button">🛒 طلب جديد</button></div>
+      <div class="mu" style="text-align:center">لو ما فتحش الواتساب، اضغط الزر الأخضر لإرسال الطلب.</div>
+    </div></div></div>`;
+  $('#invPrint').onclick=()=>window.print();
+  if(navigator.share) $('#invShare').onclick=()=>navigator.share({title:'طلب '+S.name,text:msg}).catch(()=>{}); else $('#invShare').hidden=true;
+  $('#invClose').onclick=()=>{$('#app').innerHTML='';view=''};
+  $('#invNew').onclick=()=>{Object.keys(cart).forEach(k=>delete cart[k]);$('#app').innerHTML='';view='';render();window.scrollTo({top:0,behavior:'smooth'})};
 }
 $('#openCart').onclick=cartView;
 loadStore();
