@@ -22,6 +22,11 @@ h1,h2,h3{margin-top:0}
 table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}
 th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
 .login{max-width:380px;margin:80px auto;text-align:center}
+.thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--gl);border:1px solid var(--bd)}
+.plus{width:44px;height:44px;border-radius:50%;border:2px dashed var(--g);background:var(--gl);color:var(--g);font-size:26px;font-weight:800;cursor:pointer;line-height:1;font-family:inherit;flex:0 0 auto}
+.plus:hover{background:#c8e6c9}
+.bnr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid var(--bd);border-radius:14px;padding:10px;margin-top:10px}
+.bnr img{width:220px;max-width:100%;aspect-ratio:16/6.5;object-fit:cover;border-radius:10px;background:var(--gl)}
 .toast{position:fixed;bottom:16px;left:16px;background:#1b5e20;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;display:none}
 </style>
 </head>
@@ -42,7 +47,8 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
       <span style="color:var(--mu);font-size:13px">مفصولة بالكامل عن صفحة العملاء</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn" id="saveAll">💾 حفظ وتحديث المتجر</button>
+      <button class="btn" id="pubBtn" style="background:#1565c0">🚀 نشر للعملاء</button>
+      <button class="btn" id="saveAll">💾 حفظ</button>
       <button class="sm" id="exportJson">⬇️ تحميل store-data.json</button>
       <button class="sm" id="logoutBtn">خروج</button>
     </div>
@@ -55,7 +61,13 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     <div class="f2">
       <label>اسم المتجر<input class="in" id="sName"></label>
       <label>رقم الواتساب (بكود الدولة)<input class="in" id="sPhone"></label>
-      <label>رابط الشعار (اختياري)<input class="in" id="sLogo" placeholder="https://..."></label>
+      <div>الشعار (اختياري)
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+          <img id="logoPrev" class="thumb" hidden alt="">
+          <button class="plus" id="logoPick" type="button" title="اختيار شعار من جهازك">+</button>
+          <button class="sm" id="logoRm" type="button" hidden>✕ إزالة</button>
+        </div>
+      </div>
       <label style="display:flex;align-items:center;gap:8px;padding-top:24px">
         <input type="checkbox" id="sClosed"> ⏸️ إيقاف استقبال الطلبات مؤقتاً
       </label>
@@ -79,6 +91,15 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
 
   <div class="box">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h3 style="margin:0">📂 إدارة الأقسام</h3>
+      <button class="btn" id="addCat">+ إضافة قسم</button>
+    </div>
+    <p style="color:var(--mu);font-size:13px">أضف قسماً جديداً مع صورة من جهازك، أو غيّر اسمه وترتيبه، أو احذفه. الأصناف داخل القسم المحذوف تبقى في المتجر بدون قسم.</p>
+    <div id="catsList"></div>
+  </div>
+
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <h3 style="margin:0">🥦 إدارة الأصناف</h3>
       <div style="display:flex;gap:8px">
         <input class="in" id="searchItem" placeholder="🔍 بحث..." style="width:180px;margin:0">
@@ -88,14 +109,47 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     <div class="tb">
       <table>
         <thead>
-          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>رابط الصورة</th><th>ظاهر</th><th>حذف</th></tr>
+          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>الصورة</th><th>الحالة في المتجر</th><th>حذف</th></tr>
         </thead>
         <tbody id="itemsBody"></tbody>
       </table>
     </div>
   </div>
+
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h3 style="margin:0">🖼️ صور العرض (أعلى المتجر)</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label style="font-size:13px;color:var(--mu)">⏱️ التنقل التلقائي كل <input class="in" type="number" id="bSec" min="1" max="15" style="width:70px;display:inline-block;margin:0 4px"> ثانية</label><button class="btn" id="addBanner">+ إضافة صورة عرض</button></div>
+    </div>
+    <p style="color:var(--mu);font-size:13px">اختر صورة من جهازك، ويمكنك ربطها بقسم معين ينتقل إليه العميل عند الضغط عليها. المقاس المناسب 1200×500 تقريباً.</p>
+    <div id="bannersList"></div>
+  </div>
 </div>
 
+<div class="box" id="ghBox" style="max-width:1000px;margin:0 auto 16px">
+  <h3>🚀 النشر المباشر على المتجر (GitHub)</h3>
+  <p style="color:var(--mu);font-size:13px;margin-top:0">بعد إعداد هذا القسم مرة واحدة، يكفي الضغط على «نشر للعملاء» ليظهر كل تعديل في المتجر خلال دقيقة تقريباً، دون رفع ملفات يدوياً.</p>
+  <div class="f2">
+    <label>اسم حساب GitHub<input class="in" id="ghOwner" placeholder="mohmadgarably-ops"></label>
+    <label>اسم المستودع<input class="in" id="ghRepo" placeholder="vegetable-store"></label>
+    <label>الفرع (اختياري)<input class="in" id="ghBranch" placeholder="main"></label>
+    <label>مفتاح الوصول (Token)<input class="in" type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off"></label>
+  </div>
+  <details style="margin-top:10px;font-size:13px;color:var(--mu)"><summary style="cursor:pointer;font-weight:700">كيف أحصل على المفتاح؟</summary>
+    <ol style="line-height:1.9">
+      <li>ادخل GitHub ← صورتك ← Settings ← Developer settings ← Personal access tokens ← <b>Fine-grained tokens</b> ← Generate new token.</li>
+      <li>في Repository access اختر <b>Only select repositories</b> ثم مستودع المتجر فقط.</li>
+      <li>في Permissions ← Repository permissions اجعل <b>Contents</b> = <b>Read and write</b>.</li>
+      <li>انسخ المفتاح والصقه هنا. يُحفظ في هذا المتصفح فقط ولا يظهر للعملاء.</li>
+    </ol>
+  </details>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+    <button class="btn" id="ghSave">💾 حفظ الإعداد</button>
+    <button class="sm" id="ghPull">🔄 جلب النسخة المنشورة حالياً</button>
+  </div>
+</div>
+
+<input type="file" id="filePick" accept="image/*" hidden>
 <div class="toast" id="toast">تم حفظ التغييرات بنجاح ✓</div>
 
 <script>
@@ -121,6 +175,17 @@ const DEFAULT_DATA = {
 };
 
 let S = JSON.parse(localStorage.getItem('VEG_STORE_DATA') || 'null') || DEFAULT_DATA;
+S.banners = S.banners || [];
+let pickTarget = null;
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+async function pullPublished(){
+  const r=await fetch('./store-data.json?t='+Date.now());
+  if(!r.ok) throw new Error('لا توجد نسخة منشورة بعد');
+  S=await r.json(); S.banners=S.banners||[];
+  try{localStorage.setItem('VEG_STORE_DATA',JSON.stringify(S))}catch(e){}
+  renderAdmin();
+}
+if(!localStorage.getItem('VEG_STORE_DATA')) pullPublished().catch(()=>{});
 
 function notify(msg){
   const t=$('#toast'); t.textContent=msg; t.style.display='block';
@@ -148,7 +213,9 @@ function renderAdmin(){
   $('#storeTitle').textContent = S.name;
   $('#sName').value = S.name;
   $('#sPhone').value = S.phone;
-  $('#sLogo').value = S.logo || '';
+  $('#logoPrev').hidden = !S.logo; if(S.logo) $('#logoPrev').src = S.logo;
+  $('#logoRm').hidden = !S.logo;
+  $('#bSec').value = S.bannerSec || 2;
   $('#sClosed').checked = !!S.closed;
 
   $('#fBase').value = S.fee.base;
@@ -158,44 +225,76 @@ function renderAdmin(){
   $('#fMin').value = S.fee.minOrder || 0;
   $('#locText').textContent = S.store.lat!=null ? `الإحداثيات: ${S.store.lat.toFixed(5)}, ${S.store.lng.toFixed(5)}` : 'لم يتم تحديد موقع المحل بعد';
 
-  const visCount = S.items.filter(i=>i.v).length;
+  const visCount = S.items.filter(i=>i.v).length, hidCount = S.items.filter(i=>!i.v).length, naCount = S.items.filter(i=>i.v==2).length;
   const offersCount = S.items.filter(i=>i.v && i.o>i.p).length;
   $('#stats').innerHTML = `
     <div class="stat"><b>${S.items.length}</b><span>إجمالي الأصناف</span></div>
     <div class="stat"><b>${visCount}</b><span>الأصناف الظاهرة</span></div>
+    <div class="stat"><b>${naCount}</b><span>ظاهرة وغير متاحة</span></div>
+    <div class="stat"><b>${hidCount}</b><span>مخفية</span></div>
     <div class="stat"><b>${offersCount}</b><span>عروض نشطة</span></div>
     <div class="stat"><b>${S.fee.minOrder||0} ج</b><span>الحد الأدنى للطلب</span></div>
+    <div class="stat"><b>${(JSON.stringify(S).length/1048576).toFixed(2)} MB</b><span>حجم بيانات المتجر</span></div>
   `;
 
   const q = $('#searchItem').value.trim();
   $('#itemsBody').innerHTML = S.items.map((it,idx)=>{
     if(q && !it.n.includes(q)) return '';
     return `<tr>
-      <td><input class="in" data-idx="${idx}" data-k="n" value="${it.n}"></td>
-      <td><select class="in" data-idx="${idx}" data-k="c">${S.cats.map(c=>`<option ${c.n==it.c?'selected':''}>${c.n}</option>`).join('')}</select></td>
+      <td><input class="in" data-idx="${idx}" data-k="n" value="${esc(it.n)}"></td>
+      <td><select class="in" data-idx="${idx}" data-k="c"><option value="" ${!it.c?'selected':''}>— بدون قسم —</option>${S.cats.map(c=>`<option value="${esc(c.n)}" ${c.n==it.c?'selected':''}>${esc(c.n)}</option>`).join('')}</select></td>
       <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="p" value="${it.p}" style="width:75px"></td>
       <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="o" value="${it.o||''}" style="width:75px"></td>
-      <td><select class="in" data-idx="${idx}" data-k="u"><option value="kg" ${it.u!='pc'?'selected':''}>كيلو</option><option value="pc" ${it.u=='pc'?'selected':''}>عبوة</option></select></td>
-      <td><input class="in" data-idx="${idx}" data-k="img" value="${it.img||''}" placeholder="رابط الصورة"></td>
-      <td><input type="checkbox" data-idx="${idx}" data-k="v" ${it.v?'checked':''}></td>
+      <td><select class="in" data-idx="${idx}" data-k="u"><option value="kg" ${(it.u!='pc'&&it.u!='bn')?'selected':''}>كيلو</option><option value="pc" ${it.u=='pc'?'selected':''}>قطعة</option><option value="bn" ${it.u=='bn'?'selected':''}>ربطة</option></select></td>
+      <td><div style="display:flex;gap:6px;align-items:center">${it.img?`<img class="thumb" src="${it.img}" alt="">`:''}<button class="plus" data-up="${idx}" title="اختيار صورة من جهازك">+</button>${it.img?`<button class="sm" data-rmimg="${idx}">✕</button>`:''}</div></td>
+      <td><select class="in" data-idx="${idx}" data-k="v" style="min-width:150px"><option value="1" ${it.v==1?'selected':''}>✅ ظاهر ومتاح للبيع</option><option value="2" ${it.v==2?'selected':''}>🚫 ظاهر وغير متاح</option><option value="0" ${!it.v?'selected':''}>🙈 مخفي من المتجر</option></select></td>
       <td><button class="sm" data-del="${idx}">🗑</button></td>
     </tr>`;
   }).join('');
+  renderCats(); renderBanners();
+}
+
+function renderCats(){
+  const n=S.cats.length;
+  $('#catsList').innerHTML = n ? S.cats.map((c,i)=>{
+    const cnt=S.items.filter(it=>it.c==c.n).length;
+    return `<div class="bnr" style="align-items:center">
+      <div style="display:flex;gap:6px;align-items:center">${c.img?`<img class="thumb" src="${c.img}" alt="">`:`<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:26px">${esc(c.e||'🥕')}</div>`}<button class="plus" data-cup="${i}" title="اختيار صورة من جهازك">+</button>${c.img?`<button class="sm" data-crmimg="${i}">✕</button>`:''}</div>
+      <div style="display:flex;gap:8px;flex:1;min-width:200px;flex-wrap:wrap;align-items:center">
+        <input class="in" data-ce="${i}" value="${esc(c.e||'')}" placeholder="إيموجي" style="width:70px;margin:0;text-align:center">
+        <input class="in" data-cn="${i}" value="${esc(c.n)}" placeholder="اسم القسم" style="flex:1;min-width:120px;margin:0">
+        <span style="font-size:12px;color:var(--mu)">${cnt} صنف</span>
+      </div>
+      <div style="display:flex;gap:6px"><button class="sm" data-cup2="${i}" ${i==0?'disabled':''}>▲</button><button class="sm" data-cdn="${i}" ${i==n-1?'disabled':''}>▼</button><button class="sm" data-cdel="${i}">🗑 حذف</button></div>
+    </div>`}).join('') : '<p style="color:var(--mu)">لا توجد أقسام، اضغط "إضافة قسم".</p>';
+}
+
+function renderBanners(){
+  $('#bannersList').innerHTML = S.banners.length ? S.banners.map((b,i)=>`<div class="bnr">
+    ${b.img?`<img src="${b.img}" alt="">`:'<div class="thumb" style="width:220px"></div>'}
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:180px">
+      <button class="sm" data-bup="${i}">＋ ${b.img?'تغيير الصورة':'اختيار صورة من الجهاز'}</button>
+      <label style="font-size:12px;color:var(--mu)">عند الضغط عليها ينتقل إلى
+        <select class="in" data-blink="${i}"><option value="">— بدون —</option><option value="عروض" ${b.link=='عروض'?'selected':''}>🔥 قسم العروض</option><optgroup label="الأقسام">${S.cats.map(c=>`<option value="${esc(c.n)}" ${b.link==c.n?'selected':''}>${esc(c.e||'')} ${esc(c.n)}</option>`).join('')}</optgroup><optgroup label="المنتجات">${S.items.map(it=>`<option value="p:${esc(it.id)}" ${b.link=='p:'+it.id?'selected':''}>${esc(it.n)}</option>`).join('')}</optgroup></select></label>
+      <button class="sm" data-bdel="${i}">🗑 حذف</button>
+    </div></div>`).join('') : '<p style="color:var(--mu)">لا توجد صور عرض بعد، اضغط "إضافة صورة عرض".</p>';
 }
 
 $('#itemsBody').oninput=e=>{
   const d=e.target.dataset; if(d.idx==null)return;
   const it=S.items[d.idx];
-  it[d.k] = e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value);
-  if(d.k=='u') it.s = e.target.value=='pc'?1:250;
+  it[d.k] = d.k=='v' ? +e.target.value : (e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value));
+  if(d.k=='u') it.s = e.target.value=='kg'?250:1;
 };
 $('#itemsBody').onclick=e=>{
-  const del=e.target.dataset.del;
+  const D=e.target.dataset, del=D.del;
+  if(D.up!=null){pickTarget={t:'item',i:+D.up};$('#filePick').click();return}
+  if(D.rmimg!=null){S.items[D.rmimg].img='';renderAdmin();return}
   if(del!=null && confirm('حذف هذا الصنف؟')){S.items.splice(del,1);renderAdmin()}
 };
 $('#searchItem').oninput=renderAdmin;
 $('#addItem').onclick=()=>{
-  S.items.unshift({id:'i'+Date.now(),n:'صنف جديد',c:S.cats[0].n,p:20,s:250,v:1,img:''});
+  S.items.unshift({id:'i'+Date.now(),n:'صنف جديد',c:S.cats[0]?S.cats[0].n:'',p:20,u:'kg',s:250,v:1,img:''});
   renderAdmin();
 };
 $('#setLoc').onclick=()=>{
@@ -205,22 +304,154 @@ $('#setLoc').onclick=()=>{
   },()=>alert('اسمح للمتصفح بالوصول للموقع'));
 };
 
-$('#saveAll').onclick=()=>{
+$('#addCat').onclick=()=>{
+  let k=1,nm='قسم جديد'; while(S.cats.some(c=>c.n==nm)) nm='قسم جديد '+(++k);
+  S.cats.push({n:nm,e:'🥕'}); renderAdmin();
+  pickTarget={t:'cat',i:S.cats.length-1}; $('#filePick').click();
+};
+$('#catsList').onclick=e=>{
+  const d=e.target.dataset;
+  if(d.cup!=null){pickTarget={t:'cat',i:+d.cup};$('#filePick').click();return}
+  if(d.crmimg!=null){delete S.cats[d.crmimg].img;renderAdmin();return}
+  if(d.cup2!=null&&+d.cup2>0){const i=+d.cup2;[S.cats[i-1],S.cats[i]]=[S.cats[i],S.cats[i-1]];renderAdmin();return}
+  if(d.cdn!=null&&+d.cdn<S.cats.length-1){const i=+d.cdn;[S.cats[i+1],S.cats[i]]=[S.cats[i],S.cats[i+1]];renderAdmin();return}
+  if(d.cdel!=null){
+    const c=S.cats[d.cdel], cnt=S.items.filter(it=>it.c==c.n).length;
+    if(!confirm(`حذف قسم «${c.n}»؟`+(cnt?`\nيوجد به ${cnt} صنف وسيبقون في المتجر بدون قسم.`:''))) return;
+    S.items.forEach(it=>{if(it.c==c.n) it.c=''});
+    S.banners.forEach(b=>{if(b.link==c.n) b.link=''});
+    S.cats.splice(d.cdel,1); renderAdmin();
+  }
+};
+$('#catsList').onchange=e=>{
+  const d=e.target.dataset;
+  if(d.ce!=null){S.cats[d.ce].e=e.target.value.trim()||'🥕';return}
+  if(d.cn!=null){
+    const c=S.cats[d.cn], nn=e.target.value.trim(), old=c.n;
+    if(!nn||S.cats.some((x,i)=>i!=d.cn&&x.n==nn)){alert(!nn?'اكتب اسم القسم':'يوجد قسم بنفس الاسم');e.target.value=old;return}
+    if(nn==old)return;
+    c.n=nn;
+    S.items.forEach(it=>{if(it.c==old) it.c=nn});
+    S.banners.forEach(b=>{if(b.link==old) b.link=nn});
+    renderAdmin();
+  }
+};
+
+$('#addBanner').onclick=()=>{S.banners.push({img:'',link:''});renderBanners();pickTarget={t:'banner',i:S.banners.length-1};$('#filePick').click()};
+$('#bannersList').onclick=e=>{
+  const d=e.target.dataset;
+  if(d.bup!=null){pickTarget={t:'banner',i:+d.bup};$('#filePick').click()}
+  if(d.bdel!=null && confirm('حذف صورة العرض؟')){S.banners.splice(d.bdel,1);renderBanners()}
+};
+$('#bannersList').onchange=e=>{const d=e.target.dataset;if(d.blink!=null)S.banners[d.blink].link=e.target.value};
+$('#logoPick').onclick=()=>{pickTarget={t:'logo'};$('#filePick').click()};
+$('#logoRm').onclick=()=>{S.logo='';renderAdmin()};
+
+function compress(file,maxW,type,q){
+  return new Promise((ok,no)=>{
+    const r=new FileReader();
+    r.onerror=no;
+    r.onload=()=>{
+      const im=new Image();
+      im.onerror=no;
+      im.onload=()=>{
+        const k=Math.min(1,maxW/im.width), c=document.createElement('canvas');
+        c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+        const x=c.getContext('2d');
+        if(type==='image/jpeg'){x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height)}
+        x.drawImage(im,0,0,c.width,c.height);
+        ok(c.toDataURL(type,q));
+      };
+      im.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+$('#filePick').onchange=async e=>{
+  const f=e.target.files[0]; e.target.value='';
+  if(!f||!pickTarget)return;
+  if(!f.type.startsWith('image/')){alert('اختر ملف صورة فقط');return}
+  try{
+    const T=pickTarget;
+    if(T.t==='item') S.items[T.i].img = await compress(f,600,'image/jpeg',.78);
+    else if(T.t==='banner') S.banners[T.i].img = await compress(f,1200,'image/jpeg',.8);
+    else if(T.t==='cat') S.cats[T.i].img = await compress(f,300,'image/jpeg',.8);
+    else if(T.t==='logo') S.logo = await compress(f,200,'image/png');
+    renderAdmin(); notify('تم اختيار الصورة ✓ — لا تنس الضغط على حفظ');
+  }catch(err){alert('تعذر قراءة الصورة، جرّب صورة أخرى')}
+  pickTarget=null;
+};
+
+function collect(){
   S.name = $('#sName').value.trim() || 'سوق الخضار';
   S.phone = $('#sPhone').value.trim();
-  S.logo = $('#sLogo').value.trim();
   S.closed = $('#sClosed').checked;
   S.fee = {
     base:+$('#fBase').value, firstKm:+$('#fFirst').value,
     perKm:+$('#fPer').value, maxKm:+$('#fMax').value, minOrder:+$('#fMin').value
   };
-  localStorage.setItem('VEG_STORE_DATA', JSON.stringify(S));
+  S.bannerSec = Math.min(15, Math.max(1, +$('#bSec').value || 2));
+  S.banners = S.banners.filter(b=>b.img);
+}
+function saveLocal(){
+  try{ localStorage.setItem('VEG_STORE_DATA', JSON.stringify(S)); return true }catch(e){ return false }
+}
+$('#saveAll').onclick=()=>{
+  collect();
+  if(saveLocal()) notify('تم الحفظ في هذا المتصفح ✓ — اضغط «نشر للعملاء» ليظهر في المتجر');
+  else alert('مساحة التخزين في المتصفح ممتلئة. استخدم «نشر للعملاء» مباشرة.');
   renderAdmin();
-  notify('تم الحفظ وتحديث بيانات المتجر فوراً ✓');
 };
 
+// ---------- GitHub ----------
+const GH_KEY='VEG_GH';
+function ghLoad(){try{return JSON.parse(localStorage.getItem(GH_KEY)||'{}')}catch(e){return{}}}
+function ghRead(){return{owner:$('#ghOwner').value.trim(),repo:$('#ghRepo').value.trim(),branch:$('#ghBranch').value.trim(),token:$('#ghToken').value.trim()}}
+(function(){const g=ghLoad();$('#ghOwner').value=g.owner||'mohmadgarably-ops';$('#ghRepo').value=g.repo||'vegetable-store';$('#ghBranch').value=g.branch||'';$('#ghToken').value=g.token||''})();
+$('#ghSave').onclick=()=>{localStorage.setItem(GH_KEY,JSON.stringify(ghRead()));notify('تم حفظ إعداد النشر ✓')};
+$('#ghPull').onclick=async()=>{
+  if(!confirm('سيتم استبدال البيانات الحالية في هذه الصفحة بالنسخة المنشورة. متابعة؟'))return;
+  try{await pullPublished();notify('تم جلب النسخة المنشورة ✓')}catch(e){alert(e.message)}
+};
+const b64=str=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result.split(',')[1]);r.onerror=no;r.readAsDataURL(new Blob([str],{type:'application/json'}))});
+async function ghErr(r){
+  if(r.status==401) return 'المفتاح (Token) غير صحيح أو منتهي.';
+  if(r.status==403) return 'المفتاح لا يملك صلاحية الكتابة. فعّل Contents = Read and write.';
+  if(r.status==404) return 'لم يُعثر على المستودع. راجع اسم الحساب والمستودع وأن المفتاح مرتبط به.';
+  if(r.status==409||r.status==422) return 'تعارض في النسخة، أعد المحاولة بعد لحظات.';
+  try{return (await r.json()).message}catch(e){return 'خطأ '+r.status}
+}
+async function publish(){
+  const g=ghRead();
+  if(!g.owner||!g.repo||!g.token){
+    $('#ghBox').scrollIntoView({behavior:'smooth'});
+    alert('أكمل إعداد النشر أولاً (الحساب والمستودع والمفتاح) ثم اضغط نشر.');
+    return;
+  }
+  localStorage.setItem(GH_KEY,JSON.stringify(g));
+  collect(); saveLocal(); renderAdmin();
+  const btn=$('#pubBtn'); btn.disabled=true; btn.textContent='⏳ جاري النشر...';
+  try{
+    const api=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/store-data.json`;
+    const H={Authorization:'Bearer '+g.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+    const q=g.branch?'?ref='+encodeURIComponent(g.branch):'';
+    let sha;
+    const r1=await fetch(api+q,{headers:H});
+    if(r1.ok) sha=(await r1.json()).sha; else if(r1.status!==404) throw new Error(await ghErr(r1));
+    const body={message:'تحديث بيانات المتجر',content:await b64(JSON.stringify(S,null,1))};
+    if(sha)body.sha=sha; if(g.branch)body.branch=g.branch;
+    const r2=await fetch(api,{method:'PUT',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r2.ok) throw new Error(await ghErr(r2));
+    notify('تم النشر ✓ سيظهر للعملاء خلال دقيقة تقريباً');
+  }catch(e){
+    alert('تعذر النشر: '+(e.message||e));
+  }
+  btn.disabled=false; btn.textContent='🚀 نشر للعملاء';
+}
+$('#pubBtn').onclick=publish;
+
 $('#exportJson').onclick=()=>{
-  $('#saveAll').click();
+  collect(); saveLocal();
   const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);

@@ -7,6 +7,8 @@
 <title>سوق الخضار</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{
   --bg:#f5f9f2;--card:#ffffff;--tx:#182619;--mu:#5f7260;--g:#2e7d32;--g2:#43a047;
@@ -78,6 +80,10 @@ h1{margin:0;font-size:20px;font-weight:800}
 .pk{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:2px solid var(--bd);background:var(--card);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 .pk.on{border-color:var(--g);background:var(--gl);color:var(--g)}
 .big{background:#1ebe5d;color:#fff;border:0;border-radius:14px;padding:14px;width:100%;font-family:inherit;font-size:16px;font-weight:800;margin-top:12px;cursor:pointer}
+.hl{outline:3px solid var(--ac);box-shadow:0 0 0 6px rgba(239,108,0,.25)}
+#chips{scroll-margin-top:72px}
+.ub{display:inline-block;background:var(--gl);color:var(--g);border:1px solid var(--bd);border-radius:8px;padding:1px 10px;font-size:11px;font-weight:800}
+#map{height:280px;border-radius:14px;border:1px solid var(--bd);margin:8px 0;isolation:isolate}
 </style>
 </head>
 <body>
@@ -137,16 +143,18 @@ async function loadStore(){
     const res = await fetch(DATA_URL + '?t=' + Date.now());
     if(res.ok){ S = await res.json(); }
   }catch(e){}
-  init();
+  S.banners=S.banners||[]; init();
 }
 
 const nz=s=>s.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
-const stp=it=>it.u=='pc'?1:(it.s||250);
-const ul=it=>it.u=='pc'?'/ عبوة':'/ كجم';
+const UN={kg:{l:'كيلو',per:'/ كجم',b:'⚖️ بالكيلو'},pc:{l:'قطعة',per:'/ قطعة',b:'🔢 بالقطعة'},bn:{l:'ربطة',per:'/ ربطة',b:'🌿 بالربطة'}};
+const U=it=>UN[it.u]?it.u:'kg';
+const stp=it=>U(it)=='kg'?(it.s||250):1;
+const ul=it=>UN[U(it)].per;
 const fmt=g=>g>=1000?(g/1000).toString().replace('.',',')+' كجم':g+' جم';
-const fq=(it,q)=>it.u=='pc'?q+' عبوة':fmt(q);
+const fq=(it,q)=>U(it)=='kg'?fmt(q):q+' '+UN[U(it)].l;
 const money=n=>(Math.round(n*100)/100).toString().replace('.',',')+' ج';
-const cost=it=>it.u=='pc'?it.p*cart[it.id]:it.p*cart[it.id]/1000;
+const cost=it=>U(it)=='kg'?it.p*cart[it.id]/1000:it.p*cart[it.id];
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 
 function init(){
@@ -164,11 +172,12 @@ function render(){
   const list = vis.filter(i=>(cat=='الكل'||(cat=='عروض'?i.o>i.p:i.c==cat))&&(!q||nz(i.n).includes(nz(q))));
   $('#grid').innerHTML = (S.closed?'<div style="grid-column:1/-1;background:#fff3cd;color:#664d03;padding:12px;border-radius:14px;text-align:center;font-weight:700">⏸️ الطلبات متوقفة مؤقتاً، نعود قريباً</div>':'') +
     list.map(i=>{
-      const ok = i.p>0 && !S.closed, g = cart[i.id]||0;
-      return `<div class="card">
+      const na = i.v==2, ok = i.p>0 && !S.closed && !na, g = cart[i.id]||0;
+      return `<div class="card" data-id="${i.id}">
         <div class="ph">${i.img?`<img src="${i.img}" alt="${esc(i.n)}" loading="lazy">`:(S.cats.find(c=>c.n==i.c)?.e||'🥕')}${i.o>i.p?`<span class="bg">خصم ${Math.round((1-i.p/i.o)*100)}%</span>`:''}</div>
         <b>${esc(i.n)}</b>
-        <div class="pr">${ok?money(i.p)+' '+ul(i)+(i.o>i.p?` <s class="mu">${money(i.o)}</s>`:''):'غير متوفر حالياً'}</div>
+        <div><span class="ub">${UN[U(i)].b}</span></div>
+        <div class="pr">${ok?money(i.p)+' '+ul(i)+(i.o>i.p?` <s class="mu">${money(i.o)}</s>`:''):(na?'غير متاح للبيع حالياً':'غير متوفر حالياً')}</div>
         ${g?`<div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,g)}</span><button data-p="${i.id}">+</button></div><div class="mu">${money(cost(i))}</div>`:
             `<button class="add" data-p="${i.id}" ${ok?'':'disabled'}>+ أضف للسلة</button>`}
       </div>`;
@@ -179,21 +188,41 @@ function render(){
   $('#openCart').textContent = `🧺 عرض السلة (${its.length} صنف) — ${money(sub)}`;
 }
 
+let bnTimer=null, bnI=0, bnPause=0;
 function banners(){
-  const B = (S.banners||[]).filter(b=>b.img), e = $('#bn');
+  const B=(S.banners||[]).filter(b=>b.img), e=$('#bn');
+  clearInterval(bnTimer); bnI=0;
   if(!B.length){
     e.innerHTML='<div class="bs"><div class="dp"><div><b>خضار وفواكه طازجة يومياً</b><span>فريش ومجمد · توصيل سريع لحد باب بيتك</span><em>اطلب الآن</em></div><i>🍅🥕<br>🍋🥦</i></div></div>';
     return;
   }
-  e.innerHTML = `<div class="bs">${B.map(b=>`<div ${b.link?`data-bl="${b.link}" style="cursor:pointer"`:''}><img src="${b.img}" alt=""></div>`).join('')}</div>`;
+  e.innerHTML = `<div class="bs" id="bs">${B.map(b=>`<div ${b.link?`data-bl="${esc(b.link)}" style="cursor:pointer"`:''}><img src="${b.img}" alt=""></div>`).join('')}</div>`+
+    (B.length>1?`<div class="dots" id="dots">${B.map((_,i)=>`<b class="${i?'':'on'}"></b>`).join('')}</div>`:'');
+  if(B.length<2)return;
+  const bs=$('#bs'), sign=getComputedStyle(bs).direction==='rtl'?-1:1;
+  const go=i=>{bnI=i;bs.scrollTo({left:sign*i*bs.clientWidth,behavior:'smooth'})};
+  bs.addEventListener('scroll',()=>{
+    const i=Math.round(Math.abs(bs.scrollLeft)/bs.clientWidth);
+    [...$('#dots').children].forEach((d,k)=>d.classList.toggle('on',k==i));
+    bnI=i;
+  },{passive:true});
+  ['touchstart','pointerdown','wheel'].forEach(ev=>bs.addEventListener(ev,()=>{bnPause=Date.now()+4000},{passive:true}));
+  bnTimer=setInterval(()=>{ if(document.hidden||Date.now()<bnPause)return; go((bnI+1)%B.length) },Math.max(1,+S.bannerSec||2)*1000);
+}
+function goItem(id){
+  const it=S.items.find(i=>i.id==id&&i.v); if(!it)return;
+  cat='الكل'; $('#q').value=''; render();
+  const el=document.querySelector(`.card[data-id="${id}"]`); if(!el)return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'),2500);
 }
 
 document.addEventListener('click',e=>{
   const t=e.target, d=t.dataset||{};
   const cb=t.closest&&t.closest('[data-c]'); if(cb){cat=cb.dataset.c;render()}
-  const bl=t.closest&&t.closest('[data-bl]'); if(bl){cat=bl.dataset.bl;render()}
-  if(d.p){const it=S.items.find(i=>i.id==d.p);cart[it.id]=(cart[it.id]||0)+stp(it);render();if($('#app').firstChild)cartView()}
-  if(d.m){const it=S.items.find(i=>i.id==d.m);cart[it.id]-=stp(it);if(cart[it.id]<=0)delete cart[it.id];render();if($('#app').firstChild)cartView()}
+  const bl=t.closest&&t.closest('[data-bl]'); if(bl){const l=bl.dataset.bl; if(l.startsWith('p:'))goItem(l.slice(2)); else{cat=l;render();$('#chips').scrollIntoView({behavior:'smooth',block:'start'})}}
+  if(d.p){const it=S.items.find(i=>i.id==d.p); if(!it||it.v==2)return; cart[it.id]=(cart[it.id]||0)+stp(it);render();if(view=='cart')cartView()}
+  if(d.m){const it=S.items.find(i=>i.id==d.m);cart[it.id]-=stp(it);if(cart[it.id]<=0)delete cart[it.id];render();if(view=='cart')cartView()}
   if(d.set){cart[d.set]=+d.val;render();cartView()}
   if(d.r){delete cart[d.r];render();cartView()}
 });
@@ -202,77 +231,136 @@ $('#q').oninput=render;
 function dist(a,b,c,d){const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))}
 function delivery(){
   if(pick||!loc)return{fee:0,km:null};
-  if(loc.manual||S.store.lat==null)return{fee:loc.manual?0:+S.fee.base,km:null,pending:!!loc.manual};
+  if(S.store.lat==null)return{fee:+S.fee.base,km:null};
   const F=S.fee, km=dist(S.store.lat,S.store.lng,loc.lat,loc.lng);
   return{fee:Math.round(+F.base+Math.max(0,km-F.firstKm)*F.perKm),km};
 }
 
+let view='', map=null, mk=null, gpsTried=false, cname='', cphone='', cnote='';
+const subTotal=()=>S.items.filter(i=>cart[i.id]).reduce((a,i)=>a+cost(i),0);
+
 function cartView(){
   const its=S.items.filter(i=>cart[i.id]), A=$('#app');
-  if(!its.length){A.innerHTML='';return}
-  const nm=esc($('#cn')?.value||''), ph=esc($('#cp')?.value||''), nt=esc($('#cx')?.value||'');
-  if($('#ad'))addr=$('#ad').value; if($('#pt'))pt=$('#pt').value; if($('#dt'))dtv=$('#dt').value;
-  const sub=its.reduce((a,i)=>a+cost(i),0), D=delivery(), far=D.km!=null&&D.km>S.fee.maxKm;
+  if(!its.length){A.innerHTML='';view='';return}
+  view='cart';
+  const sub=subTotal(), min=+S.fee.minOrder||0;
   A.innerHTML=`<div class="sheet"><div class="w">
     <button class="x" id="cl">✕</button><h2>🧺 سلة المشتريات</h2>
     ${its.map(i=>`<div class="row">
       <div style="flex:1">
         <b>${esc(i.n)}</b> <span class="mu">(${money(i.p)} ${ul(i)})</span>
-        ${i.u=='pc'
-          ? `<div class="qchips">${[1,2,3,5].map(v=>`<button data-set="${i.id}" data-val="${v}">${v} عبوة</button>`).join('')}</div>`
-          : `<div class="qchips">${[250,500,1000,2000].map(v=>`<button data-set="${i.id}" data-val="${v}">${fmt(v)}</button>`).join('')}</div>`}
+        <div class="qchips">${U(i)=='kg'
+          ? [250,500,1000,2000].map(v=>`<button data-set="${i.id}" data-val="${v}">${fmt(v)}</button>`).join('')
+          : [1,2,3,5].map(v=>`<button data-set="${i.id}" data-val="${v}">${v} ${UN[U(i)].l}</button>`).join('')}</div>
       </div>
       <div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,cart[i.id])}</span><button data-p="${i.id}">+</button></div>
       <b style="min-width:56px;text-align:left">${money(cost(i))}</b>
       <button class="sm" data-r="${i.id}">🗑</button>
     </div>`).join('')}
-    <input class="in" id="cn" placeholder="الاسم (مطلوب)" value="${nm}">
-    <input class="in" id="cp" placeholder="رقم التليفون (مطلوب)" inputmode="tel" value="${ph}">
-    <button class="pk ${pick?'on':''}" id="pk">🏬 استلام من المحل ${pick?'✓':''}</button>
-    ${pick
-      ? `<label class="mu">⏰ ميعاد الاستلام<input class="in" type="datetime-local" id="pt" value="${pt}"></label>`
-      : `<button class="sm" id="loc" style="width:100%;margin:4px 0">📍 ${loc?'تم تحديد موقعك ✓':'تحديد موقعي للتوصيل (مطلوب)'}</button>
-         <input class="in" id="ml" placeholder="أو الصق رابط موقعك من خرائط جوجل">
-         <textarea class="in" id="ad" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، العمارة، الشقة) — مطلوب">${esc(addr)}</textarea>`}
-    <textarea class="in" id="cx" rows="2" placeholder="ملاحظات إضافية (اختياري)">${nt}</textarea>
-    <div class="row"><span>مجموع المشتريات</span><b>${money(sub)}</b></div>
-    ${S.fee.minOrder>0?`<div class="mu">الحد الأدنى للطلب: ${money(S.fee.minOrder)}</div>`:''}
-    <div class="row"><span>رسوم التوصيل</span><b>${pick?'بدون رسوم':D.pending?'تُحدد عند التأكيد':loc?money(D.fee):'بعد تحديد الموقع'}</b></div>
-    <div class="row" style="font-size:17px"><b>الإجمالي</b><b>${money(sub+D.fee)}</b></div>
-    <button class="big" id="go">💬 إرسال الطلب عبر واتساب</button>
-    <p id="err" style="color:#c62828;font-size:13px;font-weight:700">${far?'عذراً، موقعك خارج نطاق التوصيل ('+S.fee.maxKm+' كم).':''}</p>
+    <div class="row" style="font-size:17px"><b>مجموع المشتريات</b><b>${money(sub)}</b></div>
+    ${min>0?`<div class="mu">الحد الأدنى للطلب: ${money(min)}</div>`:''}
+    <button class="big" id="next" style="background:var(--g)">التالي: بيانات الطلب والتوصيل ←</button>
+    <p id="err" style="color:#c62828;font-size:13px;font-weight:700"></p>
   </div></div>`;
+  $('#cl').onclick=()=>{A.innerHTML='';view=''};
+  $('#next').onclick=()=>{
+    if(sub<min) return $('#err').textContent='الحد الأدنى للطلب '+money(min);
+    checkout();
+  };
+}
 
-  $('#cl').onclick=()=>A.innerHTML='';
-  $('#pk').onclick=()=>{pick=!pick;cartView()};
+function saveFields(){
+  if($('#cn'))cname=$('#cn').value; if($('#cp'))cphone=$('#cp').value; if($('#cx'))cnote=$('#cx').value;
+  if($('#ad'))addr=$('#ad').value; if($('#pt'))pt=$('#pt').value;
+}
+function setLoc(ll,zoom){
+  loc={lat:ll.lat,lng:ll.lng};
+  if(mk)mk.setLatLng(ll); if(zoom&&map)map.setView(ll,16);
+  upd();
+}
+function useGps(auto){
+  if(!navigator.geolocation){ if(!auto)$('#err').textContent='المتصفح لا يدعم تحديد الموقع، اضغط على الخريطة'; return }
+  navigator.geolocation.getCurrentPosition(
+    p=>setLoc({lat:p.coords.latitude,lng:p.coords.longitude},true),
+    ()=>{ if(!auto)$('#err').textContent='لم نتمكن من تحديد موقعك. اضغط على الخريطة أو اسحب الدبوس لمكان بيتك.' },
+    {enableHighAccuracy:true,timeout:10000});
+}
+function upd(){
+  const D=delivery(), far=D.km!=null&&D.km>S.fee.maxKm, sub=subTotal();
+  if(!$('#feeTxt'))return;
+  $('#feeTxt').textContent = pick?'بدون رسوم':!loc?'بعد تحديد الموقع':money(D.fee);
+  $('#totTxt').textContent = money(sub+(pick||!loc?0:D.fee));
+  if($('#locMsg')) $('#locMsg').textContent = loc ? '✅ تم تحديد موقعك'+(D.km!=null?' — المسافة '+D.km.toFixed(1).replace('.',',')+' كم':'') : '⚠️ لم يتم تحديد موقعك بعد';
+  $('#err').textContent = far ? 'عذراً، موقعك خارج نطاق التوصيل ('+S.fee.maxKm+' كم).' : '';
+}
+function initMap(){
+  const el=$('#map'); if(!el)return;
+  if(typeof L==='undefined'){el.innerHTML='<p class="mu" style="padding:20px;text-align:center">تعذر تحميل الخريطة، تأكد من الإنترنت ثم أعد المحاولة</p>';return}
+  const c = loc?[loc.lat,loc.lng]:(S.store.lat!=null?[S.store.lat,S.store.lng]:[31.2001,29.9187]);
+  map=L.map(el).setView(c,loc?16:13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+  const ic=(h,w,a)=>L.divIcon({className:'',html:h,iconSize:[w,w],iconAnchor:a});
+  if(S.store.lat!=null) L.marker([S.store.lat,S.store.lng],{icon:ic('<div style="font-size:26px;line-height:30px">🏪</div>',30,[15,15]),interactive:false}).addTo(map);
+  mk=L.marker(c,{draggable:true,icon:ic('<div style="font-size:34px;line-height:34px">📍</div>',34,[17,34])}).addTo(map);
+  mk.on('dragend',()=>setLoc(mk.getLatLng()));
+  map.on('click',e=>setLoc(e.latlng));
+  setTimeout(()=>map&&map.invalidateSize(),200);
+}
+
+function checkout(){
+  const A=$('#app'); view='co';
+  if(map){map.remove();map=null;mk=null}
+  A.innerHTML=`<div class="sheet"><div class="w">
+    <button class="x" id="cl">✕</button><h2>📝 إتمام الطلب</h2>
+    <button class="sm" id="back">→ رجوع للسلة</button>
+    <input class="in" id="cn" placeholder="الاسم" autocomplete="name" value="${esc(cname)}">
+    <input class="in" id="cp" placeholder="رقم التليفون" inputmode="tel" autocomplete="tel" value="${esc(cphone)}">
+    <div style="display:flex;gap:8px">
+      <button class="pk ${pick?'':'on'}" id="mDel" style="flex:1">🚚 توصيل لبيتي</button>
+      <button class="pk ${pick?'on':''}" id="mPick" style="flex:1">🏬 استلام من المحل</button>
+    </div>
+    ${pick
+      ? `<label class="mu">⏰ ميعاد الاستلام<input class="in" type="datetime-local" id="pt" value="${esc(pt)}"></label>`
+      : `<button class="sm" id="gps" style="width:100%;margin-top:4px">📍 استخدم موقعي الحالي</button>
+         <div class="mu" style="margin-top:6px">أو اضغط على الخريطة / اسحب الدبوس 📍 إلى مكان بيتك</div>
+         <div id="map"></div>
+         <div id="locMsg" style="font-weight:700;font-size:13px"></div>
+         <textarea class="in" id="ad" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، العمارة، الشقة)">${esc(addr)}</textarea>`}
+    <textarea class="in" id="cx" rows="2" placeholder="ملاحظات إضافية (اختياري)">${esc(cnote)}</textarea>
+    <div class="row"><span>مجموع المشتريات</span><b>${money(subTotal())}</b></div>
+    <div class="row"><span>رسوم التوصيل</span><b id="feeTxt"></b></div>
+    <div class="row" style="font-size:17px"><b>الإجمالي</b><b id="totTxt"></b></div>
+    <button class="big" id="go">💬 إرسال الطلب عبر واتساب</button>
+    <p id="err" style="color:#c62828;font-size:13px;font-weight:700"></p>
+  </div></div>`;
+  const close=()=>{if(map){map.remove();map=null}A.innerHTML='';view=''};
+  $('#cl').onclick=close;
+  $('#back').onclick=()=>{saveFields();if(map){map.remove();map=null}cartView()};
+  $('#mDel').onclick=()=>{saveFields();pick=false;checkout()};
+  $('#mPick').onclick=()=>{saveFields();pick=true;checkout()};
   if(!pick){
-    $('#loc').onclick=()=>navigator.geolocation?.getCurrentPosition(p=>{loc={lat:p.coords.latitude,lng:p.coords.longitude};cartView()},()=>$('#err').textContent='فعّل إذن الموقع أو الصق رابط جوجل ماب');
-    $('#ml').onchange=()=>{const v=$('#ml').value.trim(),m=v.match(/(-?\d{1,2}\.\d{3,})[^\d-]+(-?\d{1,3}\.\d{3,})/);if(m){loc={lat:+m[1],lng:+m[2]};cartView()}else if(/^https?:\/\//.test(v)){loc={manual:v};cartView()}};
+    initMap(); $('#gps').onclick=()=>useGps(false);
+    if(!loc&&!gpsTried){gpsTried=true;useGps(true)}
   }
+  upd();
   $('#go').onclick=()=>{
-    const n=$('#cn').value.trim(), p=$('#cp').value.trim(), x=$('#cx').value.trim(), E=s=>$('#err').textContent=s;
+    saveFields();
+    const n=cname.trim(), p=cphone.trim(), x=cnote.trim(), E=s=>$('#err').textContent=s;
+    if(S.closed)return E('الطلبات متوقفة مؤقتاً');
     if(!n)return E('من فضلك اكتب اسمك');
     if(p.replace(/\D/g,'').length<8)return E('من فضلك اكتب رقم تليفون صحيح');
+    const sub=subTotal(), D=delivery();
     if(sub<(+S.fee.minOrder||0))return E('الحد الأدنى للطلب '+money(S.fee.minOrder));
-    if(!pick&&$('#ad').value.trim().length<8)return E('اكتب عنوان التوصيل بالتفصيل');
-    if(!pick&&!loc)return E('حدد موقعك للتوصيل');
-    if(far)return E('موقعك خارج نطاق التوصيل');
-    const lk=loc&&(loc.manual||`https://www.google.com/maps?q=${loc.lat},${loc.lng}`);
-    let m=`🧾 *طلب جديد - ${S.name}*
-👤 الاسم: ${n}
-📱 الهاتف: ${p}
-`+(pick?`🏬 استلام من المحل
-`:`🏠 العنوان: ${$('#ad').value.trim()}
-📍 الموقع: ${lk}
-`)+`──────────────
-`;
-    its.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}
-`});
-    m+=`──────────────
-المجموع: ${money(sub)}
-التوصيل: ${pick?'مجاني':money(D.fee)}
-*الإجمالي: ${money(sub+D.fee)}*`+(x?`
-📝 ملاحظات: ${x}`:'');
+    if(!pick&&!loc)return E('حدد موقعك على الخريطة أولاً');
+    if(!pick&&D.km!=null&&D.km>S.fee.maxKm)return E('موقعك خارج نطاق التوصيل');
+    if(!pick&&addr.trim().length<5)return E('اكتب العنوان بالتفصيل (الشارع، العمارة، الشقة)');
+    const its=S.items.filter(i=>cart[i.id]);
+    const lk=loc&&`https://www.google.com/maps?q=${loc.lat},${loc.lng}`;
+    let m=`🧾 *طلب جديد - ${S.name}*\n👤 الاسم: ${n}\n📱 الهاتف: ${p}\n`+
+      (pick?`🏬 استلام من المحل${pt?'\n⏰ الميعاد: '+pt.replace('T',' '):''}\n`:`🏠 العنوان: ${addr.trim()}\n📍 الموقع: ${lk}\n`)+`──────────────\n`;
+    its.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}\n`});
+    const fee=pick?0:D.fee;
+    m+=`──────────────\nالمجموع: ${money(sub)}\nالتوصيل: ${pick?'مجاني':money(fee)}\n*الإجمالي: ${money(sub+fee)}*`+(x?`\n📝 ملاحظات: ${x}`:'');
     window.open('https://wa.me/'+S.phone+'?text='+encodeURIComponent(m),'_blank');
   };
 }
