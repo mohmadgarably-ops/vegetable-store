@@ -8,7 +8,7 @@
   "lng": 29.584897199631595
  },
  "fee": {
-  "base": 10,
+  "base": 15,
   "firstKm": 1,
   "perKm": 5,
   "maxKm": 15,
