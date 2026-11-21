@@ -51,6 +51,8 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
       <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="apOn" checked> نشر تلقائي</label>
       <button class="btn" id="pubBtn" style="background:#1565c0">🚀 نشر للعملاء</button>
       <button class="btn" id="saveAll">💾 حفظ</button>
+      <button class="sm" id="copyLink">🔗 نسخ رابط المتجر</button>
+      <button class="sm" id="dlIndex">📦 index كامل بالبيانات</button>
       <button class="sm" id="exportJson">⬇️ تحميل store-data.json</button>
       <button class="sm" id="logoutBtn">خروج</button>
     </div>
@@ -408,7 +410,8 @@ $('#saveAll').onclick=()=>{
 // ---------- GitHub ----------
 const GH_KEY='VEG_GH';
 function ghLoad(){try{return JSON.parse(localStorage.getItem(GH_KEY)||'{}')}catch(e){return{}}}
-function ghRead(){return{owner:$('#ghOwner').value.trim(),repo:$('#ghRepo').value.trim(),branch:$('#ghBranch').value.trim(),token:$('#ghToken').value.trim()}}
+const INVIS=/[\s\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g;
+function ghRead(){return{owner:$('#ghOwner').value.replace(INVIS,''),repo:$('#ghRepo').value.replace(INVIS,''),branch:$('#ghBranch').value.replace(INVIS,''),token:$('#ghToken').value.replace(INVIS,'')}}
 (function(){const g=ghLoad();$('#ghOwner').value=g.owner||'mohmadgarably-ops';$('#ghRepo').value=g.repo||'vegetable-store';$('#ghBranch').value=g.branch||'';$('#ghToken').value=g.token||''})();
 $('#ghSave').onclick=()=>{localStorage.setItem(GH_KEY,JSON.stringify(ghRead()));apStop=false;apFailAt=0;notify('تم حفظ إعداد النشر ✓')};
 $('#ghPull').onclick=async()=>{
@@ -427,6 +430,9 @@ function fatalErr(msg,extra){return Object.assign(new Error(msg),extra||{fatal:t
 async function pushData(obj){
   const g=ghRead();
   if(!g.owner||!g.repo||!g.token) throw fatalErr('أكمل إعداد النشر (الحساب والمستودع والمفتاح)',{fatal:false,setup:true});
+  const bad=['owner','repo','branch','token'].find(k=>/[^\x21-\x7e]/.test(g[k]));
+  if(bad) throw fatalErr(bad=='token'?'المفتاح فيه حروف غير صحيحة (عربي أو رموز). امسح الخانة وانسخ المفتاح من GitHub من جديد (يبدأ بـ github_pat_)':'خانة «'+({owner:'الحساب',repo:'المستودع',branch:'الفرع'}[bad])+'» فيها حروف غير إنجليزية');
+  if(g.token!==$('#ghToken').value) $('#ghToken').value=g.token;
   localStorage.setItem(GH_KEY,JSON.stringify(g));
   const api=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/store-data.json`;
   const H={Authorization:'Bearer '+g.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
@@ -441,7 +447,7 @@ async function pushData(obj){
     const body={message:'تحديث بيانات المتجر',content};
     if(sha)body.sha=sha; if(g.branch)body.branch=g.branch;
     const r2=await fetch(api,{method:'PUT',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(r2.ok) return;
+    if(r2.ok) return Math.round(content.length*0.75);
     lastMsg=await ghErr(r2);
     if(r2.status==409||r2.status==422){await new Promise(k=>setTimeout(k,1200));continue}
     throw fatalErr(lastMsg,{fatal:[401,403,404].includes(r2.status)});
@@ -461,10 +467,10 @@ async function publish(){
   pubBusy=true;
   try{
     const o=snapshot();
-    await pushData(o);
+    const sz=await pushData(o);
     lastPub=lastSeen=JSON.stringify(o); apStop=false; apFailAt=0;
-    setApState('ok');
-    notify('تم النشر ✓ سيظهر للعملاء خلال دقيقة تقريباً');
+    sizeTxt(sz); setApState('ok');
+    notify('تم النشر ✓ سيظهر للعملاء خلال دقيقة تقريباً'+(sz>6e6?' — تنبيه: حجم البيانات كبير فقد يبطؤ تحميل المتجر':''));
   }catch(e){ alert('تعذر النشر: '+(e.message||e)); }
   pubBusy=false;
   btn.disabled=false; btn.textContent='🚀 نشر للعملاء';
@@ -481,15 +487,20 @@ function snapshot(){
   o.banners=S.banners.filter(b=>b.img);
   return o;
 }
+let szT='';function sizeTxt(b){szT=b?' ('+(b/1048576).toFixed(1)+' MB)':''}
 function setApState(k,msg){
-  const T={ok:['🟢 تم النشر تلقائياً','#2e7d32'],busy:['⏳ جاري النشر...','#1565c0'],pending:['✏️ تعديلات... سيُنشر بعد لحظات','#ef6c00'],
+  const T={ok:['🟢 تم النشر تلقائياً'+szT,'#2e7d32'],unpub:['⚠️ فيه تعديلات غير منشورة للعملاء — اضغط 🚀 نشر','#c62828'],busy:['⏳ جاري النشر...','#1565c0'],pending:['✏️ تعديلات... سيُنشر بعد لحظات','#ef6c00'],
     err:['⚠️ تعذر النشر: '+(msg||''),'#c62828'],setup:['🔑 أضف مفتاح النشر لتفعيل النشر التلقائي','#ef6c00'],off:['⏸️ النشر التلقائي متوقف','#5f7260'],idle:['','#5f7260']}[k];
   const el=$('#apState'); el.textContent=T[0]; el.style.color=T[1];
 }
 async function apTick(){
   if($('#adminPanel').style.display!=='block'||pubBusy) return;
   const o=snapshot(), cur=JSON.stringify(o);
-  if(lastPub===null){lastPub=lastSeen=cur;setApState('idle');return}
+  if(lastPub===null){
+    lastPub=lastSeen=cur; setApState('idle');
+    try{const r=await fetch('./store-data.json?t='+Date.now(),{cache:'no-store'});
+      if(r.ok){const p=JSON.stringify(await r.json()); if(p!==cur) setApState('unpub')}}catch(e){}
+    return}
   if(cur!==lastSeen){lastSeen=cur;stableAt=Date.now();if(cur!==lastPub)setApState('pending');return}
   if(cur===lastPub) return;
   if(Date.now()-stableAt<2500) return;
@@ -502,7 +513,7 @@ async function apTick(){
   if(apStop){setApState('err','راجع إعداد النشر ثم اضغط «حفظ الإعداد»');return}
   if(apFailAt&&Date.now()-apFailAt<20000)return;
   pubBusy=true; setApState('busy');
-  try{await pushData(o);lastPub=cur;apFailAt=0;setApState('ok')}
+  try{const sz=await pushData(o);lastPub=cur;apFailAt=0;sizeTxt(sz);setApState('ok')}
   catch(e){ if(e.fatal)apStop=true; apFailAt=Date.now(); setApState(e.setup?'setup':'err',e.message) }
   pubBusy=false;
 }
@@ -510,6 +521,23 @@ setInterval(()=>{apTick().catch(()=>{pubBusy=false})},1500);
 $('#apOn').onchange=()=>{ if($('#apOn').checked){apFailAt=0;lastSeen=null;setApState('idle')} else setApState('off') };
 window.addEventListener('beforeunload',e=>{ if(lastPub!==null&&$('#adminPanel').style.display==='block'&&JSON.stringify(snapshot())!==lastPub&&$('#apOn').checked){e.preventDefault();e.returnValue=''} });
 
+
+$('#copyLink').onclick=async()=>{
+  if(location.protocol==='file:'){alert('افتح الأدمن من رابط الموقع (github.io) وليس من ملف على الجهاز لينسخ الرابط الصحيح.');return}
+  const u=new URL('./',location.href).href;
+  try{await navigator.clipboard.writeText(u);notify('تم نسخ رابط المتجر ✓ أرسله للعملاء: '+u)}catch(e){prompt('انسخ رابط المتجر وأرسله للعملاء:',u)}
+};
+$('#dlIndex').onclick=async()=>{
+  try{
+    const r=await fetch('./index.html?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw 0;
+    let h=await r.text(); collect(); const o=snapshot();
+    const js=JSON.stringify(o).replace(/</g,'\\u003c');
+    h=h.replace(/<scr\u0069pt>window\.__EMBED=[\s\S]*?<\/scr\u0069pt>\n?/,'').replace('</head>',()=>'<scr'+'ipt>window.__EMBED='+js+';<'+'/scr'+'ipt>\n</head>');
+    const blob=new Blob([h],{type:'text/html'}), l=document.createElement('a');
+    l.href=URL.createObjectURL(blob); l.download='index-full.html'; l.click();
+    notify('تم تحميل index-full.html — فيه كل الأصناف والصور مدمجة ويعمل حتى لو أُرسل كملف');
+  }catch(e){alert('تعذر التحميل. افتح الأدمن من رابط الموقع (github.io) وليس من ملف على الجهاز.')}
+};
 
 $('#exportJson').onclick=()=>{
   collect(); saveLocal();

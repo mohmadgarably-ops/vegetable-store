@@ -166,7 +166,7 @@ const DEFAULT_STORE = {
   ]
 };
 
-let S = JSON.parse(localStorage.getItem('VEG_STORE_DATA') || 'null') || DEFAULT_STORE;
+let S = window.__EMBED || (()=>{try{return JSON.parse(localStorage.getItem('VEG_STORE_DATA')||'null')}catch(e){return null}})() || DEFAULT_STORE;
 const cart={}; let cat='الكل', loc=null, pick=false, pt='', dtv='', addr='';
 
 async function loadStore(){
