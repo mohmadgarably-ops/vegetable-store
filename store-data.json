@@ -8,11 +8,11 @@
   "lng": null
  },
  "fee": {
-  "base": 0,
-  "firstKm": 0,
-  "perKm": 0,
-  "maxKm": 0,
-  "minOrder": 0
+  "base": 15,
+  "firstKm": 1,
+  "perKm": 7,
+  "maxKm": 15,
+  "minOrder": 50
  },
  "cats": [
   {
