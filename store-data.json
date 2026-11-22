@@ -18,22 +18,22 @@
   {
    "n": "خضار",
    "e": "🥬",
-   "img": "img/aaedf0c4e6352ec65d18fbee.jpg"
+   "img": "img/21fc4d678163a920dce5722e.jpg"
   },
   {
    "n": "فواكه",
    "e": "🍎",
-   "img": "img/8ecceac83caa5b8cf68a4337.jpg"
+   "img": "img/59d3fe199be76a30efce67c5.jpg"
   },
   {
    "n": "ورقيات وأعشاب",
    "e": "🌿",
-   "img": "img/3d7304477e6449c1c746608d.jpg"
+   "img": "img/3c2e6a09868e8311f006346f.jpg"
   },
   {
    "n": "مجمدة",
    "e": "🧊",
-   "img": "img/a4fe321300827e6b1af509c0.jpg"
+   "img": "img/ec3999be95f210fe7d9feaa0.jpg"
   },
   {
    "n": "بلح وتمور",
@@ -43,15 +43,15 @@
  ],
  "banners": [
   {
-   "img": "img/ee4200b45d0516e5890d5f07.jpg",
+   "img": "img/7443944647e8af0e69586e91.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/267d2c133d29a97b857c81d4.jpg",
+   "img": "img/5003253b99302c249e076a69.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/b0997fce5bc35437c4636882.jpg",
+   "img": "img/02c867cada548785b59db8aa.jpg",
    "link": "عروض"
   }
  ],
@@ -77,7 +77,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/d34332477e7e800933244239.jpg",
+   "img": "img/23a7f4809a342712cd35680f.jpg",
    "w": [
     500,
     1000
@@ -91,7 +91,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/c9bf49bf8f21a244d0304e1e.jpg"
+   "img": "img/e6be0393f680d79ddbed1c2a.jpg"
   },
   {
    "id": "i1795386647123",
@@ -111,7 +111,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/8e9422a38403e5f5bc76d1ec.jpg"
+   "img": "img/dc599498e3beaf8dd88b0f47.jpg"
   },
   {
    "id": "i1795386443569",
@@ -121,7 +121,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/ff59eecca5bf64428ca25fdc.jpg"
+   "img": "img/d1fd4d389e7ef0e429c4678d.jpg"
   },
   {
    "id": "i1795386393093",
@@ -131,7 +131,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/69594a2887534108edc4356b.jpg"
+   "img": "img/e5b17751b0691b785fde9c56.jpg"
   },
   {
    "id": "i1795386277754",
@@ -141,7 +141,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/c60dbf163593728f64d54305.jpg"
+   "img": "img/0067bc0773952308dd9d137b.jpg"
   },
   {
    "id": "i1795385899042",
@@ -165,7 +165,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/900e72872a4b916c0efc2812.jpg"
+   "img": "img/6bbf07462d10f49a87410195.jpg"
   },
   {
    "id": "i1795385517914",
@@ -175,7 +175,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/8326db938a03d1dab4cbcdce.jpg"
+   "img": "img/dd3107ccdffad23db82e6b2a.jpg"
   },
   {
    "id": "i1795385386147",
@@ -205,7 +205,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/192fe4a349494c95872fca70.jpg"
+   "img": "img/30d82a94f56ffc2a43eba254.jpg"
   },
   {
    "id": "i1795353682762",
@@ -693,7 +693,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/96cd6565077eebaac42ab3ed.jpg"
+   "img": "img/b8d91abbd559b2815bccd0b7.jpg"
   },
   {
    "id": "i1795271201209",
@@ -1172,7 +1172,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/ee7b085070b580c2e399b681.jpg",
+   "img": "img/29bd31ee7179315ba71c8e00.jpg",
    "w": [
     500,
     1000,
@@ -1210,7 +1210,7 @@
    "p": 30,
    "s": 500,
    "v": 1,
-   "img": "img/0f3d4b1ce8984eb722f30607.jpg",
+   "img": "img/5e0c3c05f51d791127c4dfd8.jpg",
    "w": [
     500,
     1000,
@@ -1224,7 +1224,7 @@
    "p": 28,
    "s": 500,
    "v": 1,
-   "img": "img/caf156eee27ce92de0bd5abf.jpg",
+   "img": "img/8bf0dd9bdd89ef80bff3f190.jpg",
    "w": [
     500,
     1000,
@@ -1272,5 +1272,5 @@
   }
  ],
  "bannerSec": 2,
- "bg": "img/e0a316dd0388d32117d8f9bc.jpg"
+ "bg": "img/b82e381396cf801576118a35.jpg"
 }
