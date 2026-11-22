@@ -102,6 +102,14 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
       <button class="btn" id="addCat">+ إضافة قسم</button>
     </div>
     <p style="color:var(--mu);font-size:13px">أضف قسماً جديداً مع صورة من جهازك، أو غيّر اسمه وترتيبه، أو احذفه. الأصناف داخل القسم المحذوف تبقى في المتجر بدون قسم.</p>
+    <div class="bnr" style="align-items:center;margin-bottom:10px;background:var(--gl)">
+      <div style="display:flex;gap:6px;align-items:center">
+        <div id="allThumb" class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden">🍽️</div>
+        <button class="plus" id="allPick" type="button" title="اختيار صورة من جهازك">+</button>
+        <button class="sm" id="allRm" type="button" hidden>✕</button>
+      </div>
+      <div style="flex:1;min-width:200px"><b>أيقونة قسم «الكل»</b><div style="font-size:12px;color:var(--mu)">صورة مربعة 300 × 300 — تظهر دائرية في أول شريط الأقسام</div></div>
+    </div>
     <div id="catsList"></div>
   </div>
 
@@ -256,6 +264,7 @@ function renderAdmin(){
   $('#logoRm').hidden = !S.logo;
   $('#bSec').value = S.bannerSec || 2;
   $('#sClosed').checked = !!S.closed;
+  $('#allThumb').innerHTML = S.allImg ? `<img src="${S.allImg}" alt="" style="width:100%;height:100%;object-fit:cover">` : '🍽️'; $('#allRm').hidden = !S.allImg;
   $('#bgPrev').hidden = !S.bg; if(S.bg) $('#bgPrev').src = S.bg;
   $('#bgRm').hidden = !S.bg;
   $('#bgDim').value = String(S.bgDim!=null?S.bgDim:0.8);
@@ -393,6 +402,8 @@ $('#bannersList').onclick=e=>{
   if(d.bdel!=null && confirm('حذف صورة العرض؟')){S.banners.splice(d.bdel,1);renderBanners()}
 };
 $('#bannersList').onchange=e=>{const d=e.target.dataset;if(d.blink!=null)S.banners[d.blink].link=e.target.value};
+$('#allPick').onclick=()=>{pickTarget={t:'allimg'};$('#filePick').click()};
+$('#allRm').onclick=()=>{delete S.allImg;renderAdmin()};
 $('#bgPick').onclick=()=>{pickTarget={t:'bg'};$('#filePick').click()};
 $('#bgRm').onclick=()=>{delete S.bg;renderAdmin()};
 $('#bgDim').oninput=e=>{S.bgDim=+e.target.value};
@@ -428,6 +439,7 @@ $('#filePick').onchange=async e=>{
     if(T.t==='item') S.items[T.i].img = await compress(f,500,'image/jpeg',.72);
     else if(T.t==='banner') S.banners[T.i].img = await compress(f,1000,'image/jpeg',.75);
     else if(T.t==='cat') S.cats[T.i].img = await compress(f,260,'image/jpeg',.75);
+    else if(T.t==='allimg') S.allImg = await compress(f,260,'image/jpeg',.75);
     else if(T.t==='bg') S.bg = await compress(f,1080,'image/jpeg',.7);
     else if(T.t==='logo') S.logo = await compress(f,200,'image/png');
     renderAdmin(); notify('تم اختيار الصورة ✓ — لا تنس الضغط على حفظ');
@@ -453,6 +465,7 @@ $('#compAll').onclick=async()=>{
   if(!confirm('سيتم تصغير حجم كل الصور الحالية مع الحفاظ عليها (لا يتم حذف أي صورة). متابعة؟')) return;
   const btn=$('#compAll'); btn.disabled=true;
   const jobs=[];
+  if(S.allImg) jobs.push(async()=>{S.allImg=await shrink(S.allImg,260,.75)});
   if(S.bg) jobs.push(async()=>{S.bg=await shrink(S.bg,1080,.7)});
   S.items.forEach(it=>{ if(it.img) jobs.push(async()=>{it.img=await shrink(it.img,500,.72)}) });
   S.cats.forEach(c=>{ if(c.img) jobs.push(async()=>{c.img=await shrink(c.img,260,.75)}) });
@@ -524,6 +537,7 @@ async function pubForm(o){
   const out={...o}, map=async(arr)=>{const L=[];for(const x of arr||[]) L.push(x&&x.img?{...x,img:await fix(x.img)}:x);return L};
   if(o.logo) out.logo=await fix(o.logo);
   if(o.bg) out.bg=await fix(o.bg);
+  if(o.allImg) out.allImg=await fix(o.allImg);
   out.items=await map(o.items); out.cats=await map(o.cats); out.banners=await map(o.banners);
   return {out,files};
 }
