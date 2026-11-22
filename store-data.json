@@ -8,7 +8,7 @@
   "lng": null
  },
  "fee": {
-  "base": 0,
+  "base": 15,
   "firstKm": 0,
   "perKm": 0,
   "maxKm": 0,
