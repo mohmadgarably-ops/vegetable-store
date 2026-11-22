@@ -1,6 +1,6 @@
 {
  "name": "سوق الخضار",
- "phone": "+20 10 01325508",
+ "phone": "",
  "closed": false,
  "logo": "img/d69f1648aa477889d287ec51.png",
  "store": {
@@ -8,32 +8,32 @@
   "lng": null
  },
  "fee": {
-  "base": 15,
-  "firstKm": 1,
-  "perKm": 7,
-  "maxKm": 15,
-  "minOrder": 50
+  "base": 0,
+  "firstKm": 0,
+  "perKm": 0,
+  "maxKm": 0,
+  "minOrder": 0
  },
  "cats": [
   {
    "n": "خضار",
    "e": "🥬",
-   "img": "img/ee7987eec4c5abbf09e89a1a.jpg"
+   "img": "img/aaedf0c4e6352ec65d18fbee.jpg"
   },
   {
    "n": "فواكه",
    "e": "🍎",
-   "img": "img/4dbc57e66154ac7d9ffb44d4.jpg"
+   "img": "img/8ecceac83caa5b8cf68a4337.jpg"
   },
   {
    "n": "ورقيات وأعشاب",
    "e": "🌿",
-   "img": "img/a8533c13a81529b8236173bb.jpg"
+   "img": "img/3d7304477e6449c1c746608d.jpg"
   },
   {
    "n": "مجمدة",
    "e": "🧊",
-   "img": "img/c4b0b27df911a5e49e973407.jpg"
+   "img": "img/a4fe321300827e6b1af509c0.jpg"
   },
   {
    "n": "بلح وتمور",
@@ -43,15 +43,15 @@
  ],
  "banners": [
   {
-   "img": "img/0126f2f6a64d68a833621fb5.jpg",
+   "img": "img/ee4200b45d0516e5890d5f07.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/4fa50704aa94ff223f65832f.jpg",
+   "img": "img/267d2c133d29a97b857c81d4.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/0b58e544e0039449c2abb811.jpg",
+   "img": "img/b0997fce5bc35437c4636882.jpg",
    "link": "عروض"
   }
  ],
@@ -98,7 +98,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/e76889145cc89196ac01c7c4.jpg"
+   "img": "img/2cf9a4b7192ede679bf3cfc5.jpg"
   },
   {
    "id": "i1795272430426",
@@ -108,7 +108,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/ba7e5afee57c737b44d87187.jpg"
+   "img": "img/72f54f0bdc78a34d4ee12c7d.jpg"
   },
   {
    "id": "i1795272409962",
@@ -132,7 +132,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/28aee780b67949ae4fe9a15f.jpg"
+   "img": "img/ed14b1c3bf3403e951cf2534.jpg"
   },
   {
    "id": "i1795272374513",
@@ -360,7 +360,7 @@
    "u": "kg",
    "s": 250,
    "v": 0,
-   "img": "img/b3ba83889fbe9fee144f209e.jpg"
+   "img": "img/05bb107d114d8ea12fe30a78.jpg"
   },
   {
    "id": "i1795271742225",
@@ -522,7 +522,7 @@
    "u": "kg",
    "s": 250,
    "v": 0,
-   "img": "img/0e439c6be593e3191edea4fe.jpg"
+   "img": "img/6b0c234c068ab26ddcd1cfd1.jpg"
   },
   {
    "id": "i1795271237608",
@@ -532,7 +532,7 @@
    "u": "kg",
    "s": 250,
    "v": 0,
-   "img": "img/e894c7e32fcce173c3913b69.jpg"
+   "img": "img/1e27eece1b11b7dd532d2cba.jpg"
   },
   {
    "id": "i1795271221465",
@@ -542,7 +542,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/2a2249dea275138b9fe21df8.jpg"
+   "img": "img/96cd6565077eebaac42ab3ed.jpg"
   },
   {
    "id": "i1795271201209",
@@ -552,7 +552,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/f7f7ecd3e75065e10d1695ee.jpg"
+   "img": "img/ecc968dbbacc9117c2baf8f2.jpg"
   },
   {
    "id": "i1795271182136",
@@ -586,7 +586,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/55dff3154b1d32b098771736.jpg",
+   "img": "img/f796caf5833b24470f8c161b.jpg",
    "w": [
     500,
     1000
@@ -724,7 +724,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/917cb038806bf4f3b97b6a4f.jpg",
+   "img": "img/f5a8e5b7e036bfc03d7a7c3a.jpg",
    "w": [
     500,
     1000
@@ -908,7 +908,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/3b205fdec8a4480ee67a52ee.jpg"
+   "img": "img/1b9fd177b5814712d908a354.jpg"
   },
   {
    "id": "i1795269918487",
@@ -922,7 +922,7 @@
   },
   {
    "id": "i1795269898511",
-   "n": "فلفل أخضر",
+   "n": "فلفل أخضر كوبي ",
    "c": "خضار",
    "p": 20,
    "u": "kg",
@@ -1025,7 +1025,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/81ba121e9bae31055a843278.jpg",
+   "img": "img/ee7b085070b580c2e399b681.jpg",
    "w": [
     500,
     1000,
@@ -1063,7 +1063,7 @@
    "p": 30,
    "s": 500,
    "v": 1,
-   "img": "img/27581e69386c5dd28f547fcb.jpg",
+   "img": "img/0f3d4b1ce8984eb722f30607.jpg",
    "w": [
     500,
     1000,
@@ -1077,7 +1077,7 @@
    "p": 28,
    "s": 500,
    "v": 1,
-   "img": "img/1fa1a9f8c9242cfb48b3a8e2.jpg",
+   "img": "img/caf156eee27ce92de0bd5abf.jpg",
    "w": [
     500,
     1000,
@@ -1101,7 +1101,7 @@
    "p": 40,
    "s": 500,
    "v": 1,
-   "img": "img/36c8a432ff76bd63ea68e02a.jpg"
+   "img": "img/fe554a739789d0adb9130736.jpg"
   },
   {
    "id": "i6",
@@ -1125,5 +1125,5 @@
   }
  ],
  "bannerSec": 2,
- "bg": "img/e0c5056c075c8c8bd4324844.jpg"
+ "bg": "img/e0a316dd0388d32117d8f9bc.jpg"
 }
