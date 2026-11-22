@@ -27,6 +27,8 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
 .plus:hover{background:#c8e6c9}
 .bnr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid var(--bd);border-radius:14px;padding:10px;margin-top:10px}
 .bnr img{width:220px;max-width:100%;aspect-ratio:16/6.5;object-fit:cover;border-radius:10px;background:var(--gl)}
+.wc{display:inline-flex;align-items:center;gap:2px;background:var(--gl);border:1px solid var(--bd);border-radius:8px;padding:2px 4px 2px 8px;font-size:12px;font-weight:700;white-space:nowrap}
+.wc .x{border:0;background:none;color:#c62828;cursor:pointer;font-size:12px;padding:0 3px;font-family:inherit}
 .toast{position:fixed;bottom:16px;left:16px;background:#1b5e20;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;display:none}
 </style>
 </head>
@@ -52,6 +54,7 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
       <button class="btn" id="pubBtn" style="background:#1565c0">🚀 نشر للعملاء</button>
       <button class="btn" id="saveAll">💾 حفظ</button>
       <button class="sm" id="copyLink">🔗 نسخ رابط المتجر</button>
+      <button class="sm" id="compAll" title="يصغّر حجم كل صور الأصناف والأقسام والعروض الحالية دون حذفها">🗜️ ضغط كل الصور</button>
       <button class="sm" id="dlIndex">📦 index كامل بالبيانات</button>
       <button class="sm" id="exportJson">⬇️ تحميل store-data.json</button>
       <button class="sm" id="logoutBtn">خروج</button>
@@ -114,7 +117,7 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     <div class="tb">
       <table>
         <thead>
-          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>أقل وزن</th><th>الصورة</th><th>الحالة في المتجر</th><th>حذف</th></tr>
+          <tr><th>الصنف</th><th>القسم</th><th>السعر</th><th>قبل الخصم</th><th>الوحدة</th><th>أقل وزن</th><th>الأوزان المعروضة (بترتيب الإضافة)</th><th>الصورة</th><th>الحالة في المتجر</th><th>حذف</th></tr>
         </thead>
         <tbody id="itemsBody"></tbody>
       </table>
@@ -128,6 +131,32 @@ th,td{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:right}
     </div>
     <p style="color:var(--mu);font-size:13px">اختر صورة من جهازك، ويمكنك ربطها بقسم معين ينتقل إليه العميل عند الضغط عليها. المقاس المناسب 1200×500 تقريباً.</p>
     <div id="bannersList"></div>
+  </div>
+
+  <div class="box">
+    <h3>🌄 خلفية المتجر (شاشة العميل)</h3>
+    <p style="color:var(--mu);font-size:13px;margin-top:0">صورة تظهر خلف المتجر كله وتبقى ثابتة أثناء التمرير. تستطيع تغييرها كل فترة، وتُنشر للعملاء تلقائياً.</p>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <img id="bgPrev" class="thumb" style="width:90px;height:160px" hidden alt="">
+      <button class="btn" id="bgPick" type="button">＋ اختيار صورة الخلفية</button>
+      <button class="sm" id="bgRm" type="button" hidden>✕ إزالة الخلفية</button>
+      <label style="font-size:13px;color:var(--mu)">وضوح الخلفية
+        <select class="in" id="bgDim" style="width:auto"><option value="0.92">هادئة جداً</option><option value="0.8">هادئة</option><option value="0.6">واضحة</option><option value="0.35">واضحة جداً</option></select></label>
+    </div>
+    <details open style="margin-top:12px;font-size:13px">
+      <summary style="cursor:pointer;font-weight:700">📐 مقاسات الصور المناسبة للتصميم</summary>
+      <div class="tb"><table style="min-width:520px">
+        <thead><tr><th>الصورة</th><th>المقاس (بكسل)</th><th>ملاحظة</th></tr></thead>
+        <tbody>
+          <tr><td>خلفية المتجر</td><td dir="ltr">1080 × 1920</td><td>طولية 9:16 — اترك الأطراف هادئة لأنها قد تُقص</td></tr>
+          <tr><td>صور العرض (أعلى المتجر)</td><td dir="ltr">1200 × 490</td><td>اجعل النص المهم في الوسط</td></tr>
+          <tr><td>صور الأقسام</td><td dir="ltr">300 × 300</td><td>مربعة وتظهر دائرية — الموضوع في المنتصف</td></tr>
+          <tr><td>صور الأصناف</td><td dir="ltr">600 × 600</td><td>مربعة والصنف في المنتصف</td></tr>
+          <tr><td>الشعار</td><td dir="ltr">200 × 200</td><td>PNG بخلفية شفافة</td></tr>
+          <tr><td>أيقونة الشاشة الرئيسية</td><td dir="ltr">512 × 512 (و192 × 192)</td><td>PNG مربعة بدون زوايا دائرية</td></tr>
+        </tbody></table></div>
+      <p style="color:var(--mu);margin:8px 0 0">الصيغة المفضلة JPG. تُصغَّر الصور تلقائياً عند الرفع، فلا داعي لتصغيرها قبل ذلك.</p>
+    </details>
   </div>
 </div>
 
@@ -185,6 +214,8 @@ const DEFAULT_DATA = {
 let S = JSON.parse(localStorage.getItem('VEG_STORE_DATA') || 'null') || DEFAULT_DATA;
 S.banners = S.banners || [];
 let pickTarget = null;
+const wLbl=x=>x>=1000?(x/1000).toString().replace('.',',')+' كجم':x+' جم';
+const wList=it=>{const w=(it.w||[]).filter(x=>x>0); if(w.length)return w; const s=it.s||250, d=[250,500,1000].filter(x=>x>=s); return d.length?d:[s]};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 async function pullPublished(){
   const r=await fetch('./store-data.json?t='+Date.now());
@@ -225,6 +256,9 @@ function renderAdmin(){
   $('#logoRm').hidden = !S.logo;
   $('#bSec').value = S.bannerSec || 2;
   $('#sClosed').checked = !!S.closed;
+  $('#bgPrev').hidden = !S.bg; if(S.bg) $('#bgPrev').src = S.bg;
+  $('#bgRm').hidden = !S.bg;
+  $('#bgDim').value = String(S.bgDim!=null?S.bgDim:0.8);
 
   $('#fBase').value = S.fee.base;
   $('#fFirst').value = S.fee.firstKm;
@@ -255,6 +289,7 @@ function renderAdmin(){
       <td><input class="in" type="number" step="0.5" data-idx="${idx}" data-k="o" value="${it.o||''}" style="width:75px"></td>
       <td><select class="in" data-idx="${idx}" data-k="u"><option value="kg" ${(it.u!='pc'&&it.u!='bn')?'selected':''}>كيلو</option><option value="pc" ${it.u=='pc'?'selected':''}>قطعة</option><option value="bn" ${it.u=='bn'?'selected':''}>ربطة</option></select></td>
       <td>${(it.u!='pc'&&it.u!='bn')?`<select class="in" data-idx="${idx}" data-k="s" style="min-width:95px"><option value="250" ${(it.s||250)==250?'selected':''}>250 جم</option><option value="500" ${it.s==500?'selected':''}>500 جم</option><option value="1000" ${it.s==1000?'selected':''}>1 كجم</option></select>`:'<span style="color:var(--mu)">—</span>'}</td>
+      <td>${(it.u!='pc'&&it.u!='bn')?`<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-width:170px">${wList(it).map((x,k)=>`<span class="wc">${wLbl(x)}<button class="x" data-wrm="${idx}:${k}" title="إزالة">✕</button></span>`).join('')}<select class="in" data-wadd="${idx}" style="width:auto;margin:0;padding:4px 6px"><option value="">+ وزن</option>${[250,500,750,1000,1500,2000,3000,5000].filter(x=>!wList(it).includes(x)).map(x=>`<option value="${x}">${wLbl(x)}</option>`).join('')}</select></div>`:'<span style="color:var(--mu)">—</span>'}</td>
       <td><div style="display:flex;gap:6px;align-items:center">${it.img?`<img class="thumb" src="${it.img}" alt="">`:''}<button class="plus" data-up="${idx}" title="اختيار صورة من جهازك">+</button>${it.img?`<button class="sm" data-rmimg="${idx}">✕</button>`:''}</div></td>
       <td><select class="in" data-idx="${idx}" data-k="v" style="min-width:150px"><option value="1" ${it.v==1?'selected':''}>✅ ظاهر ومتاح للبيع</option><option value="2" ${it.v==2?'selected':''}>🚫 ظاهر وغير متاح</option><option value="0" ${!it.v?'selected':''}>🙈 مخفي من المتجر</option></select></td>
       <td><button class="sm" data-del="${idx}">🗑</button></td>
@@ -290,19 +325,23 @@ function renderBanners(){
 }
 
 $('#itemsBody').oninput=e=>{
-  const d=e.target.dataset; if(d.idx==null)return;
+  const d=e.target.dataset;
+  if(d.wadd!=null){ if(!e.target.value)return; const it=S.items[d.wadd], w=wList(it).slice(); w.push(+e.target.value); it.w=w; it.s=Math.min(...w); renderAdmin(); return }
+  if(d.idx==null)return;
   const it=S.items[d.idx];
   it[d.k] = (d.k=='v'||d.k=='s') ? +e.target.value : (e.target.type=='checkbox' ? (e.target.checked?1:0) : (e.target.type=='number' ? +e.target.value : e.target.value));
-  if(d.k=='u'){ it.s = e.target.value=='kg'?250:1; renderAdmin(); }
+  if(d.k=='u'){ it.s = e.target.value=='kg'?250:1; delete it.w; renderAdmin(); }
+  if(d.k=='s'&&it.w){ it.w=it.w.filter(x=>x>=it.s); if(!it.w.length)delete it.w; renderAdmin(); }
 };
 $('#itemsBody').onclick=e=>{
   const D=e.target.dataset, del=D.del;
+  if(D.wrm!=null){ const [wi,wk]=D.wrm.split(':').map(Number), it=S.items[wi], w=wList(it).slice(); if(w.length<=1){alert('يجب أن يبقى وزن واحد على الأقل');return} w.splice(wk,1); it.w=w; it.s=Math.min(...w); renderAdmin(); return }
   if(D.up!=null){pickTarget={t:'item',i:+D.up};$('#filePick').click();return}
   if(D.rmimg!=null){S.items[D.rmimg].img='';renderAdmin();return}
   if(del!=null && confirm('حذف هذا الصنف؟')){S.items.splice(del,1);renderAdmin()}
 };
 $('#searchItem').oninput=renderAdmin;
-$('#bulkBtn').onclick=()=>{ if(!confirm('تغيير أقل وزن لكل الأصناف المباعة بالكيلو؟')) return; const v=+$('#bulkS').value; S.items.forEach(it=>{ if(it.u!='pc'&&it.u!='bn') it.s=v }); renderAdmin(); notify('تم التطبيق ✓ ثم اضغط نشر'); };
+$('#bulkBtn').onclick=()=>{ if(!confirm('تغيير أقل وزن لكل الأصناف المباعة بالكيلو؟')) return; const v=+$('#bulkS').value; S.items.forEach(it=>{ if(it.u!='pc'&&it.u!='bn'){ it.s=v; if(it.w){it.w=it.w.filter(x=>x>=v); if(!it.w.length)delete it.w} } }); renderAdmin(); notify('تم التطبيق ✓ ثم اضغط نشر'); };
 $('#addItem').onclick=()=>{
   S.items.unshift({id:'i'+Date.now(),n:'صنف جديد',c:S.cats[0]?S.cats[0].n:'',p:20,u:'kg',s:250,v:1,img:''});
   renderAdmin();
@@ -354,6 +393,9 @@ $('#bannersList').onclick=e=>{
   if(d.bdel!=null && confirm('حذف صورة العرض؟')){S.banners.splice(d.bdel,1);renderBanners()}
 };
 $('#bannersList').onchange=e=>{const d=e.target.dataset;if(d.blink!=null)S.banners[d.blink].link=e.target.value};
+$('#bgPick').onclick=()=>{pickTarget={t:'bg'};$('#filePick').click()};
+$('#bgRm').onclick=()=>{delete S.bg;renderAdmin()};
+$('#bgDim').oninput=e=>{S.bgDim=+e.target.value};
 $('#logoPick').onclick=()=>{pickTarget={t:'logo'};$('#filePick').click()};
 $('#logoRm').onclick=()=>{S.logo='';renderAdmin()};
 
@@ -383,13 +425,44 @@ $('#filePick').onchange=async e=>{
   if(!f.type.startsWith('image/')){alert('اختر ملف صورة فقط');return}
   try{
     const T=pickTarget;
-    if(T.t==='item') S.items[T.i].img = await compress(f,600,'image/jpeg',.78);
-    else if(T.t==='banner') S.banners[T.i].img = await compress(f,1200,'image/jpeg',.8);
-    else if(T.t==='cat') S.cats[T.i].img = await compress(f,300,'image/jpeg',.8);
+    if(T.t==='item') S.items[T.i].img = await compress(f,500,'image/jpeg',.72);
+    else if(T.t==='banner') S.banners[T.i].img = await compress(f,1000,'image/jpeg',.75);
+    else if(T.t==='cat') S.cats[T.i].img = await compress(f,260,'image/jpeg',.75);
+    else if(T.t==='bg') S.bg = await compress(f,1080,'image/jpeg',.7);
     else if(T.t==='logo') S.logo = await compress(f,200,'image/png');
     renderAdmin(); notify('تم اختيار الصورة ✓ — لا تنس الضغط على حفظ');
   }catch(err){alert('تعذر قراءة الصورة، جرّب صورة أخرى')}
   pickTarget=null;
+};
+
+function shrink(src,maxW,q){
+  return new Promise(ok=>{
+    const im=new Image();
+    im.onload=()=>{
+      const k=Math.min(1,maxW/im.width), c=document.createElement('canvas');
+      c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+      const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
+      let out; try{out=c.toDataURL('image/jpeg',q)}catch(e){return ok(src)}
+      ok(src.startsWith('data:')&&out.length>=src.length?src:out);
+    };
+    im.onerror=()=>ok(src);
+    im.src=src;
+  });
+}
+$('#compAll').onclick=async()=>{
+  if(!confirm('سيتم تصغير حجم كل الصور الحالية مع الحفاظ عليها (لا يتم حذف أي صورة). متابعة؟')) return;
+  const btn=$('#compAll'); btn.disabled=true;
+  const jobs=[];
+  if(S.bg) jobs.push(async()=>{S.bg=await shrink(S.bg,1080,.7)});
+  S.items.forEach(it=>{ if(it.img) jobs.push(async()=>{it.img=await shrink(it.img,500,.72)}) });
+  S.cats.forEach(c=>{ if(c.img) jobs.push(async()=>{c.img=await shrink(c.img,260,.75)}) });
+  S.banners.forEach(b=>{ if(b.img) jobs.push(async()=>{b.img=await shrink(b.img,1000,.75)}) });
+  const before=JSON.stringify(S).length;
+  for(let i=0;i<jobs.length;i++){ btn.textContent='🗜️ '+(i+1)+' / '+jobs.length; await jobs[i](); }
+  const after=JSON.stringify(S).length;
+  btn.disabled=false; btn.textContent='🗜️ ضغط كل الصور';
+  saveLocal(); renderAdmin();
+  notify('تم ضغط '+jobs.length+' صورة ✓ ('+(before/1048576).toFixed(1)+' ← '+(after/1048576).toFixed(1)+' MB)');
 };
 
 function collect(){
@@ -450,6 +523,7 @@ async function pubForm(o){
   const fix=async v=>{const r=await imgInfo(v); if(r.b64) files.set(r.path,r.b64); return r.path};
   const out={...o}, map=async(arr)=>{const L=[];for(const x of arr||[]) L.push(x&&x.img?{...x,img:await fix(x.img)}:x);return L};
   if(o.logo) out.logo=await fix(o.logo);
+  if(o.bg) out.bg=await fix(o.bg);
   out.items=await map(o.items); out.cats=await map(o.cats); out.banners=await map(o.banners);
   return {out,files};
 }

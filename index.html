@@ -59,7 +59,7 @@ h1{margin:0;font-size:20px;font-weight:800}
 .cat.on{color:var(--g);font-weight:800}
 .in{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font-family:inherit;font-size:14px;margin:4px 0;outline:none}
 .in:focus{border-color:var(--g)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:10px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 0}
 @media(min-width:720px){.grid{grid-template-columns:repeat(auto-fill,minmax(185px,1fr))}}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:10px;text-align:center;display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh);transition:.2s}
 .card:hover{transform:translateY(-3px)}
@@ -142,6 +142,40 @@ button,a{-webkit-tap-highlight-color:transparent}
 #instHelp[hidden]{display:none}
 #instHelp .bx{background:#fff;width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));line-height:1.9}
 #instHelp .bx h3{margin:0 0 6px}#instHelp .bx button{width:100%;margin-top:10px;background:var(--g);color:#fff;border:0;border-radius:14px;padding:12px;font-family:inherit;font-weight:800;font-size:15px}
+/* ===== شبكة 3 أصناف في الصف على الجوال ===== */
+@media(max-width:719px){
+  .card{padding:7px;gap:4px;border-radius:16px}
+  .ph{height:84px;font-size:36px;border-radius:12px}
+  .bg{top:5px;right:5px;font-size:9px;padding:1px 6px}
+  .card b{font-size:12.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+  .card .ub{font-size:10px;padding:0 7px}
+  .pr{font-size:12px;line-height:1.4}
+  .pr s{font-size:10px}
+  .card .mu{font-size:11px}
+  .add{padding:8px 4px;font-size:12px;border-radius:10px}
+  .qty{padding:3px;border-radius:10px}
+  .qty button{width:26px;height:26px;font-size:16px;border-radius:8px}
+  .qty span{font-size:10.5px;padding:0}
+}
+/* ===== شاشة إتمام الطلب ===== */
+.co{font-size:13px}
+.co h2{font-size:17px;margin:4px 0 8px}
+.co .fl{display:block;font-size:12px;font-weight:700;color:var(--mu);margin-top:8px}
+.co .fl small{font-weight:400}
+.co .in{font-size:13px;padding:9px 12px}
+.co .pk{padding:9px;font-size:13px;margin:8px 0}
+.co #map{height:210px}
+.co .hint{font-size:11px;color:var(--mu);margin:4px 0}
+.co .locb{font-size:12px;font-weight:700;margin:6px 0}
+.co .row{font-size:13px;padding:7px 0}
+.co .big{padding:12px;font-size:15px}
+.co .sm{font-size:12px;padding:8px 12px}
+/* ===== خلفية المتجر وأيقونات الأوزان ===== */
+#bgLayer{position:fixed;inset:0;z-index:-1;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
+.wch{display:flex;flex-wrap:wrap;gap:4px}
+.wc{flex:1 1 40%;border:1px solid var(--bd);background:var(--gl);color:var(--g);border-radius:9px;padding:7px 2px;font-family:inherit;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap}
+.wc.on{background:var(--g);color:#fff;border-color:var(--g)}
+@media(min-width:720px){.wc{font-size:13px;padding:8px 4px}}
 </style>
 </head>
 <body>
@@ -210,6 +244,7 @@ const nz=s=>s.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
 const UN={kg:{l:'كيلو',per:'/ كجم',b:'⚖️ بالكيلو'},pc:{l:'قطعة',per:'/ قطعة',b:'🔢 بالقطعة'},bn:{l:'ربطة',per:'/ ربطة',b:'🌿 بالربطة'}};
 const U=it=>UN[it.u]?it.u:'kg';
 const stp=it=>U(it)=='kg'?(it.s||250):1;
+const W=it=>{const w=(it.w||[]).filter(x=>x>0); if(w.length)return w; const s=stp(it), d=[250,500,1000].filter(x=>x>=s); return d.length?d:[s]};
 const ul=it=>UN[U(it)].per;
 const fmt=g=>g>=1000?(g/1000).toString().replace('.',',')+' كجم':g+' جم';
 const fq=(it,q)=>U(it)=='kg'?fmt(q):q+' '+UN[U(it)].l;
@@ -221,7 +256,14 @@ function init(){
   $('#ttl').textContent = S.name; document.title = S.name;
   if(S.logo) $('#lg').innerHTML = `<img src="${S.logo}" alt="">`;
   $('#stPill').textContent = S.closed ? '⏸️ متوقف مؤقتاً' : '🟢 مفتوح للطلبات';
-  banners(); render();
+  bgApply(); banners(); render();
+}
+function bgApply(){
+  let L=document.getElementById('bgLayer');
+  if(!S.bg){ if(L)L.remove(); return }
+  if(!L){L=document.createElement('div');L.id='bgLayer';document.body.prepend(L)}
+  const d=S.bgDim!=null?+S.bgDim:.8;
+  L.style.backgroundImage=`linear-gradient(rgba(245,249,242,${d}),rgba(245,249,242,${d})),url("${String(S.bg).replace(/"/g,'%22')}")`;
 }
 
 function render(){
@@ -238,8 +280,9 @@ function render(){
         <b>${esc(i.n)}</b>
         <div><span class="ub">${UN[U(i)].b}</span></div>
         <div class="pr">${ok?money(i.p)+' '+ul(i)+(i.o>i.p?` <s class="mu">${money(i.o)}</s>`:''):(na?'غير متاح للبيع حالياً':'غير متوفر حالياً')}</div>
+        ${(U(i)=='kg'&&ok)?`<div class="wch">${W(i).map(x=>`<button class="wc ${g==x?'on':''}" data-w="${i.id}:${x}">${fmt(x)}</button>`).join('')}</div>`:''}
         ${g?`<div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,g)}</span><button data-p="${i.id}">+</button></div><div class="mu">${money(cost(i))}</div>`:
-            `<button class="add" data-p="${i.id}" ${ok?'':'disabled'}>+ أضف للسلة</button>`}
+            ((U(i)=='kg'&&ok)?'':`<button class="add" data-p="${i.id}" ${ok?'':'disabled'}>+ أضف للسلة</button>`)}
       </div>`;
     }).join('') || '<p class="mu" style="grid-column:1/-1;text-align:center">لا توجد أصناف مطابقة</p>';
 
@@ -284,6 +327,7 @@ document.addEventListener('click',e=>{
   if(d.p){const it=S.items.find(i=>i.id==d.p); if(!it||it.v==2)return; cart[it.id]=(cart[it.id]||0)+stp(it);render();if(view=='cart')cartView()}
   if(d.m){const it=S.items.find(i=>i.id==d.m);cart[it.id]-=stp(it);if(cart[it.id]<=0)delete cart[it.id];render();if(view=='cart')cartView()}
   if(d.set){cart[d.set]=+d.val;render();cartView()}
+  if(d.w){const [wid,wx]=d.w.split(':'), it=S.items.find(i=>i.id==wid); if(!it||it.v==2)return; if(cart[wid]==+wx)delete cart[wid]; else cart[wid]=+wx; render(); if(view=='cart')cartView()}
   if(d.r){delete cart[d.r];render();cartView()}
 });
 $('#q').oninput=render;
@@ -350,6 +394,7 @@ function upd(){
   $('#feeTxt').textContent = pick?'بدون رسوم':!loc?'بعد تحديد الموقع':money(D.fee);
   $('#totTxt').textContent = money(sub+(pick||!loc?0:D.fee));
   if($('#locMsg')) $('#locMsg').textContent = loc ? '✅ تم تحديد موقعك'+(D.km!=null?' — المسافة '+D.km.toFixed(1).replace('.',',')+' كم':'') : '⚠️ لم يتم تحديد موقعك بعد';
+  if($('#locMsg')) $('#locMsg').style.color = loc ? '#2e7d32' : '#ef6c00';
   $('#err').textContent = far ? 'عذراً، موقعك خارج نطاق التوصيل ('+S.fee.maxKm+' كم).' : '';
 }
 function initMap(){
@@ -369,28 +414,27 @@ function initMap(){
 function checkout(){
   const A=$('#app'); view='co';
   if(map){map.remove();map=null;mk=null}
-  A.innerHTML=`<div class="sheet"><div class="w">
-    <button class="x" id="cl">✕</button><h2>📝 إتمام الطلب</h2>
+  A.innerHTML=`<div class="sheet"><div class="w co">
+    <button class="x" id="cl">✕</button><h2>إتمام الطلب</h2>
     <button class="sm" id="back">→ رجوع للسلة</button>
-    <input class="in" id="cn" placeholder="الاسم" autocomplete="name" value="${esc(cname)}">
-    <input class="in" id="cp" placeholder="رقم التليفون" inputmode="tel" autocomplete="tel" value="${esc(cphone)}">
+    <label class="fl">الاسم<input class="in" id="cn" placeholder="اكتب اسمك" autocomplete="name" value="${esc(cname)}"></label>
     <div style="display:flex;gap:8px">
       <button class="pk ${pick?'':'on'}" id="mDel" style="flex:1">🚚 توصيل لبيتي</button>
       <button class="pk ${pick?'on':''}" id="mPick" style="flex:1">🏬 استلام من المحل</button>
     </div>
     ${pick
-      ? `<label class="mu">⏰ ميعاد الاستلام<input class="in" type="datetime-local" id="pt" value="${esc(pt)}"></label>`
-      : `<button class="sm" id="gps" style="width:100%;margin-top:4px">📍 استخدم موقعي الحالي</button>
-         <div class="mu" style="margin-top:6px">أو اضغط على الخريطة / اسحب الدبوس 📍 إلى مكان بيتك</div>
+      ? `<div class="hint">استلام من المحل بدون رسوم توصيل.</div>`
+      : `<div class="fl">الموقع</div>
+         <button class="sm" id="gps" style="width:100%;margin-top:4px">📍 استخدم موقعي الحالي</button>
+         <div id="locMsg" class="locb"></div>
          <div id="map"></div>
-         <div id="locMsg" style="font-weight:700;font-size:13px"></div>
-         <textarea class="in" id="ad" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، العمارة، الشقة)">${esc(addr)}</textarea>`}
-    <textarea class="in" id="cx" rows="2" placeholder="ملاحظات إضافية (اختياري)">${esc(cnote)}</textarea>
+         <div class="hint">أو اضغط على الخريطة / اسحب الدبوس 📍 إلى مكان بيتك</div>`}
+    <label class="fl">ملاحظات <small>(اختياري)</small><textarea class="in" id="cx" rows="2" placeholder="مثال: الدور أو علامة مميزة">${esc(cnote)}</textarea></label>
     <div class="row"><span>مجموع المشتريات</span><b>${money(subTotal())}</b></div>
     <div class="row"><span>رسوم التوصيل</span><b id="feeTxt"></b></div>
-    <div class="row" style="font-size:17px"><b>الإجمالي</b><b id="totTxt"></b></div>
-    <button class="big" id="go">💬 إرسال الطلب عبر واتساب</button>
-    <p id="err" style="color:#c62828;font-size:13px;font-weight:700"></p>
+    <div class="row" style="font-size:15px"><b>الإجمالي</b><b id="totTxt"></b></div>
+    <button class="big" id="go">✅ إتمام الطلب</button>
+    <p id="err" style="color:#c62828;font-size:13px;font-weight:700;margin:6px 0 0"></p>
   </div></div>`;
   const close=()=>{if(map){map.remove();map=null}A.innerHTML='';view=''};
   $('#cl').onclick=close;
@@ -404,26 +448,24 @@ function checkout(){
   upd();
   $('#go').onclick=()=>{
     saveFields();
-    const n=cname.trim(), p=cphone.trim(), x=cnote.trim(), E=s=>$('#err').textContent=s;
+    const n=cname.trim(), x=cnote.trim(), E=s=>$('#err').textContent=s;
     if(S.closed)return E('الطلبات متوقفة مؤقتاً');
     if(!n)return E('من فضلك اكتب اسمك');
-    if(p.replace(/\D/g,'').length<8)return E('من فضلك اكتب رقم تليفون صحيح');
     const sub=subTotal(), D=delivery();
     if(sub<(+S.fee.minOrder||0))return E('الحد الأدنى للطلب '+money(S.fee.minOrder));
     if(!pick&&!loc)return E('حدد موقعك على الخريطة أولاً');
     if(!pick&&D.km!=null&&D.km>S.fee.maxKm)return E('موقعك خارج نطاق التوصيل');
-    if(!pick&&addr.trim().length<5)return E('اكتب العنوان بالتفصيل (الشارع، العمارة، الشقة)');
     const its=S.items.filter(i=>cart[i.id]);
     const lk=loc&&`https://www.google.com/maps?q=${loc.lat},${loc.lng}`;
     const dd=new Date(), pd=z=>String(z).padStart(2,'0'), no=`${pd(dd.getDate())}${pd(dd.getMonth()+1)}-${pd(dd.getHours())}${pd(dd.getMinutes())}${pd(dd.getSeconds())}`;
     let dstr; try{dstr=dd.toLocaleString('ar-EG-u-nu-latn',{dateStyle:'medium',timeStyle:'short'})}catch(e){dstr=dd.toLocaleString()}
-    let m=`🧾 *طلب جديد #${no} - ${S.name}*\n🕒 ${dstr}\n👤 الاسم: ${n}\n📱 الهاتف: ${p}\n`+
-      (pick?`🏬 استلام من المحل${pt?'\n⏰ الميعاد: '+pt.replace('T',' '):''}\n`:`🏠 العنوان: ${addr.trim()}\n📍 الموقع: ${lk}\n`)+`──────────────\n`;
+    let m=`🧾 *طلب جديد #${no} - ${S.name}*\n🕒 ${dstr}\n👤 الاسم: ${n}\n`+
+      (pick?`🏬 استلام من المحل\n`:`📍 الموقع: ${lk}\n`)+`──────────────\n`;
     its.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}\n`});
     const fee=pick?0:D.fee;
     m+=`──────────────\nالمجموع: ${money(sub)}\nالتوصيل: ${pick?'مجاني':money(fee)}\n*الإجمالي: ${money(sub+fee)}*`+(x?`\n📝 ملاحظات: ${x}`:'');
     const wa='https://wa.me/'+String(S.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(m);
-    showInvoice({no,date:dstr,name:n,phone:p,pick,pt,addr:addr.trim(),note:x,sub,fee,
+    showInvoice({no,date:dstr,name:n,pick,note:x,sub,fee,
       lines:its.map(i=>({n:i.n,q:fq(i,cart[i.id]),pr:money(i.p)+' '+ul(i),t:money(cost(i))}))},wa,m);
     try{window.open(wa,'_blank')}catch(e){}
   };
@@ -441,9 +483,9 @@ function showInvoice(v,wa,msg){
         <div class="inv-meta"><span>رقم الطلب: <b dir="ltr">#${esc(v.no)}</b></span><span>${esc(v.date)}</span></div>
       </div>
       <div class="inv-sec"><div class="inv-t">بيانات العميل</div>
-        ${R('الاسم',esc(v.name))}${R('الهاتف',`<span dir="ltr">${esc(v.phone)}</span>`)}
+        ${R('الاسم',esc(v.name))}
         ${R('طريقة الاستلام',v.pick?'🏬 استلام من المحل':'🚚 توصيل للمنزل')}
-        ${v.pick?R('ميعاد الاستلام',esc((v.pt||'').replace('T',' '))):R('العنوان',esc(v.addr))}
+        ${v.pick?'':R('الموقع','✅ تم تحديده على الخريطة')}
         ${R('ملاحظات',esc(v.note))}
       </div>
       <div class="inv-sec"><div class="inv-t">الأصناف (${v.lines.length})</div>
