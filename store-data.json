@@ -10,7 +10,7 @@
  "fee": {
   "base": 15,
   "firstKm": 1,
-  "perKm": 0,
+  "perKm": 7,
   "maxKm": 0,
   "minOrder": 0
  },
