@@ -18,7 +18,7 @@
   {
    "n": "خضار",
    "e": "🥬",
-   "img": "img/e9cbe6e7efcffc7474cd47e9.jpg"
+   "img": "img/94b4ae4d3e8cac3fe488b66e.jpg"
   },
   {
    "n": "فواكه",
@@ -38,37 +38,37 @@
   {
    "n": "بلح وتمور",
    "e": "🥕",
-   "img": "img/e1ebb947fd128c303f070a80.jpg"
+   "img": "img/e16ceae57acb5e66a4646f3d.jpg"
   },
   {
    "n": "قسم جديد 2",
    "e": "🥕",
-   "img": "img/47f7b4b7111b3d1fdf866a19.jpg"
+   "img": "img/213e3c13e5394a28684ec319.jpg"
   }
  ],
  "banners": [
   {
-   "img": "img/b67ee67c56f40b4367fb7899.jpg",
+   "img": "img/720155e2f9b74c2f3f684bd4.jpg",
    "link": "p:i1795444898127"
   },
   {
-   "img": "img/eaacb0cde81c6376967affae.jpg",
+   "img": "img/6b0067c561fbbc45c64410c1.jpg",
    "link": "p:i1795444947759"
   },
   {
-   "img": "img/c3cc999ac8499b1c90f4f7a3.jpg",
+   "img": "img/8cc4b7e1ff98096f88fd82f5.jpg",
    "link": "p:i1795444988503"
   },
   {
-   "img": "img/9bbacd8c576fa5ed6083a8d3.jpg",
+   "img": "img/606a0f223c9bce354aaf0ee4.jpg",
    "link": "p:i1795445030854"
   },
   {
-   "img": "img/7055834bce3640b189422d38.jpg",
+   "img": "img/b12c95655f75b78e4a314f2f.jpg",
    "link": "p:i1795445118055"
   },
   {
-   "img": "img/0c6ae1c9879c159564852d76.jpg",
+   "img": "img/8b433439b4d45c244670999c.jpg",
    "link": "p:i1795445160287"
   }
  ],
@@ -81,7 +81,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/8a32cdabf6ba8b08533f9153.jpg",
+   "img": "img/a2c099b350e7a558591bb848.jpg",
    "o": 240
   },
   {
@@ -92,7 +92,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/d6dbad82d9ab52f27e64f25d.jpg",
+   "img": "img/b1ba67c175e652ceb2f1bc3c.jpg",
    "o": 120
   },
   {
@@ -103,7 +103,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/206c75f73a29169213ea313d.jpg",
+   "img": "img/ca317da0b3c7137a3a00e496.jpg",
    "o": 120
   },
   {
@@ -114,7 +114,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/790d70f46fd4ff5db1308278.jpg",
+   "img": "img/261380e4e281bdadb1c77f4c.jpg",
    "o": 120
   },
   {
@@ -125,7 +125,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/5a13b2e369a54a0dce08d7e0.jpg",
+   "img": "img/993811af65a24b7b12b3df76.jpg",
    "o": 70
   },
   {
@@ -136,7 +136,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/757ac97d2c2b0b96a1804ed7.jpg",
+   "img": "img/c7213f26c1239f1e34877c4e.jpg",
    "o": 170
   },
   {
@@ -147,7 +147,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/92065138289fdd05b1120123.jpg",
+   "img": "img/c91ca109ce1db3e507965dd5.jpg",
    "w": [
     500,
     1000
@@ -514,7 +514,7 @@
    "u": "kg",
    "s": 250,
    "v": 0,
-   "img": "img/b18fefff0d5754e0826c21ce.jpg"
+   "img": "img/665573b26105425f876b3abc.jpg"
   },
   {
    "id": "i1795272018153",
@@ -564,7 +564,7 @@
    "u": "kg",
    "s": 250,
    "v": 0,
-   "img": "img/2c1e6a0d3a17610c86773f0c.jpg"
+   "img": "img/ca245a60234ccc4bb73962cb.jpg"
   },
   {
    "id": "i1795271817923",
@@ -1028,7 +1028,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/41e1497351dc56f948096417.jpg"
+   "img": "img/f8ef12d15ab0d142b4e50639.jpg"
   },
   {
    "id": "i1795270333831",
@@ -1088,7 +1088,7 @@
    "u": "bn",
    "s": 1,
    "v": 1,
-   "img": "img/6e820e4f7fe58cc77d6b8aef.jpg"
+   "img": "img/7d6a70c823b6cf910b8fa2d5.jpg"
   },
   {
    "id": "i1795270111191",
@@ -1224,7 +1224,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/2a3358a0ad771659e258aa84.jpg"
+   "img": "img/1476c34b5c4b3cea2ad6278e.jpg"
   },
   {
    "id": "i1795269609463",
@@ -1373,7 +1373,7 @@
  "allCat": {
   "n": "الكل",
   "e": "🛒",
-  "img": "img/c068595a063d63620283433b.jpg",
+  "img": "img/c1a33a50210551a56d762bbf.jpg",
   "mode": "page"
  }
 }
