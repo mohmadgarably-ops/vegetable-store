@@ -41,7 +41,12 @@
    "img": "img/0eb7a7b20dd5913b6331ae8c.jpg"
   }
  ],
- "banners": [],
+ "banners": [
+  {
+   "img": "img/0c6ae1c9879c159564852d76.jpg",
+   "link": ""
+  }
+ ],
  "items": [
   {
    "id": "i1795467290255",
