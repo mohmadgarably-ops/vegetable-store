@@ -12,7 +12,7 @@
   "firstKm": 1,
   "perKm": 7,
   "maxKm": 20,
-  "minOrder": 0
+  "minOrder": 50
  },
  "cats": [
   {
