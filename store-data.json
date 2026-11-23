@@ -43,15 +43,15 @@
  ],
  "banners": [
   {
-   "img": "img/8b433439b4d45c244670999c.jpg",
+   "img": "img/70ba12e801a904b161933aa0.jpg",
    "link": ""
   },
   {
-   "img": "img/720155e2f9b74c2f3f684bd4.jpg",
+   "img": "img/31b504fd74b7e7776e16dc30.jpg",
    "link": ""
   },
   {
-   "img": "img/6b0067c561fbbc45c64410c1.jpg",
+   "img": "img/4ee7657646e415006a0109bb.jpg",
    "link": ""
   },
   {
@@ -59,11 +59,11 @@
    "link": ""
   },
   {
-   "img": "img/606a0f223c9bce354aaf0ee4.jpg",
+   "img": "img/689b4984ee3f7081c783ec0f.jpg",
    "link": ""
   },
   {
-   "img": "img/b12c95655f75b78e4a314f2f.jpg",
+   "img": "img/bc19dd3e1f9a26065b7c2e92.jpg",
    "link": ""
   }
  ],
@@ -87,7 +87,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/ca317da0b3c7137a3a00e496.jpg",
+   "img": "img/a1be24ddbf64b878933e4f82.jpg",
    "o": 120
   },
   {
@@ -109,7 +109,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/993811af65a24b7b12b3df76.jpg",
+   "img": "img/7066c81ab672b1a0d09af884.jpg",
    "o": 60
   },
   {
@@ -120,7 +120,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/c7213f26c1239f1e34877c4e.jpg",
+   "img": "img/544262c334652b347243ce93.jpg",
    "o": 170
   },
   {
@@ -131,7 +131,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/a2c099b350e7a558591bb848.jpg",
+   "img": "img/a2a8a3f8612ae6fb303f097f.jpg",
    "o": 240
   },
   {
@@ -142,7 +142,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/c91ca109ce1db3e507965dd5.jpg",
+   "img": "img/81eaae637b90794b8c4d6398.jpg",
    "w": [
     500,
     1000
@@ -1432,7 +1432,7 @@
   }
  ],
  "bannerSec": 3,
- "bg": "img/d18d4786e62d011626589f4c.jpg",
+ "bg": "img/b9377bb06e652d5e23a47c78.jpg",
  "allCat": {
   "n": "الكل",
   "e": "🛒",
