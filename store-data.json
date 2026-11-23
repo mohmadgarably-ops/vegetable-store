@@ -18,7 +18,7 @@
   {
    "n": "خضار",
    "e": "🥬",
-   "img": "img/21fc4d678163a920dce5722e.jpg"
+   "img": "img/487d6e83926bf57d8108f532.jpg"
   },
   {
    "n": "فواكه",
@@ -28,12 +28,12 @@
   {
    "n": "ورقيات وأعشاب",
    "e": "🌿",
-   "img": "img/3c2e6a09868e8311f006346f.jpg"
+   "img": "img/2d9c0f5b6bf1c1b40a0a988b.jpg"
   },
   {
    "n": "مجمدة",
    "e": "🧊",
-   "img": "img/ec3999be95f210fe7d9feaa0.jpg"
+   "img": "img/9b2b2479fe94ebcedf387927.jpg"
   },
   {
    "n": "بلح وتمور",
@@ -43,20 +43,20 @@
   {
    "n": "قسم جديد 2",
    "e": "🥕",
-   "img": "img/b72d20669e5cb8a45eceace6.jpg"
+   "img": "img/8c4fbc9ce3c78d8632cc05d4.jpg"
   }
  ],
  "banners": [
   {
-   "img": "img/7443944647e8af0e69586e91.jpg",
+   "img": "img/d3ee7d255436a349586dd027.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/5003253b99302c249e076a69.jpg",
+   "img": "img/ab74590de59ff8458d179381.jpg",
    "link": "عروض"
   },
   {
-   "img": "img/02c867cada548785b59db8aa.jpg",
+   "img": "img/dde9fb7989b8c9bfff064902.jpg",
    "link": "عروض"
   }
  ],
@@ -69,7 +69,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/71056feb5e9fe0da587fa117.jpg"
+   "img": "img/7365ab0d8d37455dfe902135.jpg"
   },
   {
    "id": "i1795465180823",
@@ -79,7 +79,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/f573ee5e5966fe407a3fbb0f.jpg",
+   "img": "img/eb797d176f73de23cc08d916.jpg",
    "o": 210
   },
   {
@@ -90,7 +90,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/0dacbdabe8f772bb3b2efb88.jpg",
+   "img": "img/de028021fcfad1949aa9d0b1.jpg",
    "o": 140
   },
   {
@@ -111,7 +111,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/5733cbc802906662d1604344.jpg"
+   "img": "img/153773b915ce62357aece8c2.jpg"
   },
   {
    "id": "i1795386841025",
@@ -168,7 +168,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/dc599498e3beaf8dd88b0f47.jpg"
+   "img": "img/6d2eda9a5ac928dc3f93dda8.jpg"
   },
   {
    "id": "i1795386443569",
@@ -188,7 +188,7 @@
    "u": "kg",
    "s": 250,
    "v": 1,
-   "img": "img/e5b17751b0691b785fde9c56.jpg"
+   "img": "img/52a54fb43ab33a53306f7c66.jpg"
   },
   {
    "id": "i1795386277754",
@@ -198,7 +198,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/0067bc0773952308dd9d137b.jpg"
+   "img": "img/243a336e8e263f4a2b051919.jpg"
   },
   {
    "id": "i1795385899042",
@@ -232,7 +232,7 @@
    "u": "pc",
    "s": 1,
    "v": 1,
-   "img": "img/dd3107ccdffad23db82e6b2a.jpg"
+   "img": "img/2cd9e06dbdb0252b69547a8e.jpg"
   },
   {
    "id": "i1795385386147",
@@ -1156,7 +1156,7 @@
    "u": "kg",
    "s": 500,
    "v": 1,
-   "img": "img/900e72872a4b916c0efc2812.jpg",
+   "img": "img/6bbf07462d10f49a87410195.jpg",
    "w": [
     500,
     1000
@@ -1329,7 +1329,7 @@
   }
  ],
  "bannerSec": 2,
- "bg": "img/b82e381396cf801576118a35.jpg",
+ "bg": "img/0539b4170fee554c93e8290b.jpg",
  "allCat": {
   "n": "الكل",
   "e": "🛒",
