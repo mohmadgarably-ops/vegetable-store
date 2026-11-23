@@ -1,6 +1,6 @@
 {
  "name": "سوق الخضار",
- "phone": "+20 10 01325508",
+ "phone": "",
  "closed": false,
  "logo": "img/d69f1648aa477889d287ec51.png",
  "store": {
@@ -8,11 +8,11 @@
   "lng": null
  },
  "fee": {
-  "base": 15,
-  "firstKm": 1,
-  "perKm": 7,
-  "maxKm": 20,
-  "minOrder": 50
+  "base": 0,
+  "firstKm": 0,
+  "perKm": 0,
+  "maxKm": 0,
+  "minOrder": 0
  },
  "cats": [
   {
@@ -1107,7 +1107,7 @@
   },
   {
    "id": "i1795269850583",
-   "n": "باذنجان رومي",
+   "n": "ثوم مفروم برطمان ",
    "c": "خضار",
    "p": 15,
    "u": "kg",
