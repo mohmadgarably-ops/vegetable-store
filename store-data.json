@@ -1432,12 +1432,11 @@
   }
  ],
  "bannerSec": 3,
- "bg": "img/b9377bb06e652d5e23a47c78.jpg",
  "allCat": {
   "n": "الكل",
   "e": "🛒",
   "img": "",
-  "mode": "page"
+  "mode": "all"
  },
  "bgDim": 0.6
 }
