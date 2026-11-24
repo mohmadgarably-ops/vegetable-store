@@ -230,6 +230,24 @@ h1{margin:0;font-size:18px;font-weight:800;line-height:1.25;white-space:nowrap;o
   .inv{border:0;border-radius:0;padding:0}
 }
 
+/* ===== الشاشة الرئيسية: أقسام المتجر ===== */
+.gh{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gh h2{margin:0;font-size:17px;font-weight:800}
+.gh span{color:var(--mu);font-size:12.5px;font-weight:600}
+.gh .back{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--bd);background:#fff;border-radius:999px;padding:6px 12px 6px 14px;font-weight:700;font-size:13px;cursor:pointer;color:var(--tx);transition:.15s}
+.gh .back:hover{background:var(--gl);border-color:#BBF7D0}
+.gh .back .i{width:16px;height:16px}
+.ctile{display:flex;flex-direction:column;gap:8px;align-items:stretch;text-align:center;background:#fff;border:1px solid var(--bd);border-radius:16px;padding:10px;cursor:pointer;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s,border-color .2s;color:var(--tx);min-width:0}
+.ctile:hover{transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(15,23,42,.18);border-color:#86EFAC}
+.ctile:active{transform:scale(.97)}
+.ctile.all{border-color:#86EFAC;background:linear-gradient(180deg,#F0FDF4,#fff)}
+.cti{aspect-ratio:1/1;border-radius:12px;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cti img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.ctile:hover .cti img{transform:scale(1.06)}
+.cti em{font-style:normal;font-size:clamp(40px,12vw,58px);line-height:1}
+.ctile b{font-size:15px;font-weight:800;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
+.ctile small{font-size:12px;color:var(--mu);font-weight:600;margin-top:-4px}
+
 /* ===== شاشات أكبر ===== */
 @media(min-width:720px){
   .sub{display:inline}
@@ -338,7 +356,7 @@ const DEFAULT_STORE = {
 };
 
 let S = window.__EMBED || (()=>{try{return JSON.parse(localStorage.getItem('VEG_STORE_DATA')||'null')}catch(e){return null}})() || DEFAULT_STORE;
-const cart={}; let cat='الكل', loc=null, pick=false, pt='', dtv='', addr='';
+const cart={}; let cat='', loc=null, pick=false, pt='', dtv='', addr='';
 
 async function loadStore(){
   try{
@@ -376,11 +394,18 @@ function bgApply(){
 
 function render(){
   const vis = S.items.filter(i=>i.v);
-  const cats = [{n:'الكل',e:'🍽️',img:S.allImg},...(vis.some(i=>i.o>i.p)?[{n:'عروض',e:'🔥'}]:[]),...S.cats.filter(c=>vis.some(i=>i.c==c.n))];
-  $('#chips').innerHTML = cats.map(c=>`<button class="cat ${c.n==cat?'on':''}" data-c="${c.n}"><i>${c.img?`<img src="${c.img}" alt="">`:c.e||'🥕'}</i>${c.n}</button>`).join('');
-  const q = $('#q').value.trim();
-  const list = vis.filter(i=>(cat=='الكل'||(cat=='عروض'?i.o>i.p:i.c==cat))&&(!q||nz(i.n).includes(nz(q))));
-  $('#grid').innerHTML = (S.closed?'<div style="grid-column:1/-1;background:#fff3cd;color:#664d03;padding:12px;border-radius:14px;text-align:center;font-weight:700">⏸️ الطلبات متوقفة مؤقتاً، نعود قريباً</div>':'') +
+  const AC=S.allCat||{}, A={n:AC.n||'الكل',e:AC.e||'🛒',img:AC.img||S.allImg||''};
+  const cats = [{n:'الكل',l:A.n,e:A.e,img:A.img},...(vis.some(i=>i.o>i.p)?[{n:'عروض',e:'🔥'}]:[]),...S.cats.filter(c=>vis.some(i=>i.c==c.n))];
+  $('#chips').innerHTML = cats.map(c=>`<button class="cat ${c.n==cat?'on':''}" data-c="${c.n}"><i>${c.img?`<img src="${c.img}" alt="">`:c.e||'🥕'}</i>${c.l||c.n}</button>`).join('');
+  const q = $('#q').value.trim(), home = cat==='' && !q;
+  $('#chips').style.display = home ? 'none' : '';
+  const list = vis.filter(i=>(cat===''||cat=='الكل'||(cat=='عروض'?i.o>i.p:i.c==cat))&&(!q||nz(i.n).includes(nz(q))));
+  const cbox = (S.closed?'<div style="grid-column:1/-1;background:#fff3cd;color:#664d03;padding:12px;border-radius:14px;text-align:center;font-weight:700">⏸️ الطلبات متوقفة مؤقتاً، نعود قريباً</div>':'');
+  const nOf=c=>c.n==='الكل'?vis.length:c.n==='عروض'?vis.filter(i=>i.o>i.p).length:vis.filter(i=>i.c==c.n).length;
+  const homeHTML = cbox + '<div class="gh"><h2>أقسام المتجر</h2><span>اختر القسم، أو اضغط «'+esc(A.n)+'» لعرض كل الأصناف</span></div>' +
+    cats.map(c=>`<button class="ctile${c.n==='الكل'?' all':''}" data-c="${esc(c.n)}" type="button"><span class="cti">${c.img?`<img src="${esc(c.img)}" alt="" loading="lazy">`:`<em>${esc(c.e||'🥕')}</em>`}</span><b>${esc(c.l||c.n)}</b><small>${nOf(c)} صنف</small></button>`).join('');
+  const head = `<div class="gh">${q?'':'<button class="back" data-c="" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>الأقسام</button>'}<h2>${esc(q?'نتائج البحث':cat=='الكل'?A.n:cat)}</h2><span>${list.length} صنف</span></div>`;
+  $('#grid').innerHTML = home ? homeHTML : (cbox + head +
     list.map(i=>{
       const na = i.v==2, ok = i.p>0 && !S.closed && !na, g = cart[i.id]||0;
       return `<div class="card" data-id="${i.id}">
@@ -392,7 +417,7 @@ function render(){
         ${g?`<div class="qty"><button data-m="${i.id}">−</button><span>${fq(i,g)}</span><button data-p="${i.id}">+</button></div><div class="mu">${money(cost(i))}</div>`:
             ((U(i)=='kg'&&ok)?'':`<button class="add" data-p="${i.id}" ${ok?'':'disabled'}>+ أضف للسلة</button>`)}
       </div>`;
-    }).join('') || '<p class="mu" style="grid-column:1/-1;text-align:center">لا توجد أصناف مطابقة</p>';
+    }).join('') || '<p class="mu" style="grid-column:1/-1;text-align:center">لا توجد أصناف مطابقة</p>');
 
   const its = S.items.filter(i=>cart[i.id]), sub = its.reduce((a,i)=>a+cost(i),0);
   $('#bar').style.display = its.length ? 'block' : 'none';
@@ -715,6 +740,15 @@ loadStore();
   const help=byId('instHelp');
   help.addEventListener('click',e=>{ if(e.target===help) help.hidden=true });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!help.hidden) help.hidden=true });
+
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('[data-c]'))return;
+    setTimeout(()=>{
+      const g=byId('grid'),s=byId('stk');
+      const y=(typeof cat!=='undefined'&&cat==='')?0:g.getBoundingClientRect().top+scrollY-s.offsetHeight-8;
+      scrollTo({top:Math.max(0,y),behavior:'smooth'});
+    },30);
+  });
 
   fixGrid(); fixPill(); fixCart();
 })();
