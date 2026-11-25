@@ -621,15 +621,21 @@ function checkout(){
     const dd=new Date(), pd=z=>String(z).padStart(2,'0'), no=`${pd(dd.getDate())}${pd(dd.getMonth()+1)}-${pd(dd.getHours())}${pd(dd.getMinutes())}${pd(dd.getSeconds())}`;
     let dstr; try{dstr=dd.toLocaleString('ar-EG-u-nu-latn',{dateStyle:'medium',timeStyle:'short'})}catch(e){dstr=dd.toLocaleString()}
     let m=`🧾 *طلب جديد #${no} - ${S.name}*\n🕒 ${dstr}\n👤 الاسم: ${n}\n`+
-      (pick?`🏬 استلام من المحل\n`:`📍 الموقع: ${lk}\n`)+`──────────────\n`;
+      (pick?`🏬 استلام من المحل\n`+(storeLink()?`📍 موقع المحل: ${storeLink()}\n`:''):`📍 الموقع: ${lk}\n`)+`──────────────\n`;
     its2.forEach((i,k)=>{m+=`${k+1}) ${i.n}: ${fq(i,cart[i.id])} = ${money(cost(i))}\n`});
     const fee=pick?0:D.fee;
     m+=`──────────────\nالمجموع: ${money(sub)}\nالتوصيل: ${pick?'مجاني':money(fee)+(D.est?' (تقريبي)':'')}\n*الإجمالي: ${money(sub+fee)}*`+(x?`\n📝 ملاحظات: ${x}`:'');
     const wa='https://wa.me/'+String(S.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(m);
-    showInvoice({no,date:dstr,name:n,pick,note:x,sub,fee,est:!!D.est,
+    showInvoice({no,date:dstr,name:n,pick,sl:pick?storeLink():'',note:x,sub,fee,est:!!D.est,
       lines:its2.map(i=>({n:i.n,q:fq(i,cart[i.id]),pr:money(i.p)+' '+ul(i),t:money(cost(i))}))},wa,m);
     try{window.open(wa,'_blank')}catch(e){}
   };
+}
+function storeLink(){
+  const st=S.store||{}, l=String(st.link||'').trim();
+  if(/^https?:\/\//i.test(l)) return l;
+  if(st.lat!=null&&st.lng!=null&&st.lat!==''&&st.lng!=='') return `https://www.google.com/maps?q=${st.lat},${st.lng}`;
+  return '';
 }
 function showInvoice(v,wa,msg){
   if(map){map.remove();map=null;mk=null}
@@ -647,6 +653,7 @@ function showInvoice(v,wa,msg){
         ${R('الاسم',esc(v.name))}
         ${R('طريقة الاستلام',v.pick?'🏬 استلام من المحل':'🚚 توصيل للمنزل')}
         ${v.pick?'':R('الموقع','✅ تم تحديده على الخريطة')}
+        ${v.pick&&v.sl?R('موقع المحل',`<a href="${esc(v.sl)}" target="_blank" rel="noopener" style="color:#1b5e20;text-decoration:underline">📍 افتح في خرائط جوجل</a>`):''}
         ${R('ملاحظات',esc(v.note))}
       </div>
       <div class="inv-sec"><div class="inv-t">الأصناف (${v.lines.length})</div>
