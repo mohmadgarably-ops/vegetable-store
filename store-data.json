@@ -8,8 +8,8 @@
   "lng": 29.591789
  },
  "fee": {
-  "base": 0,
-  "firstKm": 0,
+  "base": 20,
+  "firstKm": 1,
   "perKm": 0,
   "maxKm": 0,
   "minOrder": 49
