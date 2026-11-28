@@ -1,6 +1,6 @@
 {
  "name": "سوق الخضار",
- "phone": "⁦+20 15 51240128⁩",
+ "phone": "",
  "closed": false,
  "logo": "img/579a07858d28a20dd1de557d.png",
  "store": {
@@ -8,11 +8,11 @@
   "lng": 29.591789
  },
  "fee": {
-  "base": 15,
-  "firstKm": 1,
-  "perKm": 7,
-  "maxKm": 20,
-  "minOrder": 50
+  "base": 0,
+  "firstKm": 0,
+  "perKm": 0,
+  "maxKm": 0,
+  "minOrder": -1
  },
  "cats": [
   {
